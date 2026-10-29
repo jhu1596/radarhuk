@@ -515,6 +515,7 @@
             justify-content: flex-end;
             gap: 8px;
             margin-bottom: 10px;
+            flex-wrap: wrap;
         }
 
         .btn-ServerConnect, .btn-dev-outside {
@@ -777,9 +778,10 @@
 
         <!-- 로컬 업로더 상태 카드 밖 오른쪽 끝: 서버 연결 / 초기 핀 설정 / 개발자 버튼 -->
         <div class="card-actions">
-            <button id="btnOpenPinWizard" class="btn btn-primary btn-ServerConnect">📌 핀 번호 다시 입력</button>
-            <button id="ServerConnect" class="btn btn-primary btn-ServerConnect">🖥️ 서버 주소 설정</button>
-            <button id="btnDev" class="btn btn-primary btn-dev-outside">👨‍🏫 개발자</button>
+            <button id="btnOpenPinWizard" class="btn btn-primary btn-ServerConnect" type="button">📌 핀 번호 다시 입력</button>
+            <button id="btnToggleApiBase" class="btn btn-primary btn-ServerConnect" type="button">⚙️ API 주소 설정</button>
+            <button id="ServerConnect" class="btn btn-primary btn-ServerConnect" type="button">🖥️ 서버 주소 설정</button>
+            <button id="btnDev" class="btn btn-primary btn-dev-outside" type="button">👨‍🏫 개발자</button>
         </div>
 
         <!-- 상단 탭 네비게이션 (1. 핀 및 서버 설정 / 2. 모터 각도 조절 탭 / 3. 실시간 레이더 화면) -->
@@ -802,9 +804,9 @@
         <div class="card" id="apiBaseCard" style="display: none;">
             <h2>🖥️ 로컬 백엔드 주소(API_BASE)</h2>
             <div class="info-box">
-                <p>✅ HTTPS 권장: <code>https://127.0.0.1:18443</code> (setup.bat로 인증서 설치 후)</p>
-                <p>✅ HTTP(테스트용): <code>http://127.0.0.1:8000</code></p>
-                <p>⚠️ HTTPS 배포 페이지에서는 HTTP가 차단될 수 있어 HTTPS 로컬 서버 연결을 권장합니다.</p>
+                <p>✅ HTTPS 권장: <code>https://127.0.0.1:18443</code> (setup 실행 후)</p>
+                <p>✅ HTTP(로컬 실행용): <code>http://127.0.0.1:8000</code></p>
+                <p>⚠️ <strong>중요 (CORS 안내):</strong> <code>backend-uploader.exe</code>는 허용된 주소(<code>https://lefthuk.netlify.app</code>, <code>https://joo.is</code>, <code>http://127.0.0.1:8000</code>, <code>https://127.0.0.1:18443</code> 등)에서 열린 페이지만 연결을 허용합니다. 이 HTML 파일을 로컬 서버 폴더 내 <code>public/radar.html</code>에 넣고 <code>https://127.0.0.1:18443/radar.html</code>로 접속하거나 <code>server.js</code>의 <code>ALLOWED_ORIGINS</code>에 현재 도메인을 추가하세요.</p>
             </div>
 
             <div class="connection-section">
@@ -814,6 +816,7 @@
                 </div>
                 <button id="btnSaveApiBase" class="btn btn-primary" type="button">저장</button>
                 <button id="btnAutoDetect" class="btn btn-primary" type="button">자동 감지</button>
+                <button id="btnDownloadServerExe" class="btn btn-outline" type="button">📥 로컬 서버(exe) 다운로드</button>
             </div>
 
             <div style="margin-top:10px;color:#555;font-size:.9em;">
@@ -843,11 +846,7 @@
                     <button id="btnRefreshPorts" class="btn btn-outline" type="button">포트 목록 새로고침</button>
                     <div class="form-group" style="flex:1; min-width: 180px; margin:0;">
                         <select id="portSelect" aria-label="아두이노 포트 선택">
-                            <option value="">포트를 선택하세요 (예: COM3, /dev/ttyUSB0)</option>
-                            <option value="COM3">COM3 (Arduino UNO)</option>
-                            <option value="COM4">COM4</option>
-                            <option value="/dev/ttyUSB0">/dev/ttyUSB0</option>
-                            <option value="/dev/ttyACM0">/dev/ttyACM0</option>
+                            <option value="">포트를 선택하세요</option>
                         </select>
                     </div>
                 </div>
@@ -997,7 +996,11 @@
             <div class="card">
                 <h2>
                     <span>🚀 3단계: 아두이노 레이더 코드 생성 및 업로드</span>
-                    <div style="display:flex; gap:8px;">
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <label style="font-size:13px; font-weight:600; color:#4b3bbd; display:inline-flex; align-items:center; gap:5px; cursor:pointer; background:#eef1ff; padding:5px 10px; border-radius:8px;">
+                            <input type="checkbox" id="chkNoServoLib" />
+                            Servo.h 미설치 환경 호환 모드(내장 PWM)
+                        </label>
                         <button id="btnToggleCode" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">코드 보기/숨기기</button>
                         <button id="btnCopyCode" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">📋 코드 복사</button>
                     </div>
@@ -1107,7 +1110,7 @@
                 <button id="btnClearLog" class="btn btn-outline" type="button" style="padding: 5px 12px; font-size: 12px;">로그 지우기</button>
             </h2>
             <div class="log-section" id="logSection">
-                <div class="log-message log-info">1) 초음파(TRIG, ECHO) 및 모터 핀 확인 → 2) 각도 조절 → 3) 로컬 서버 연결 후 코드 업로드 → 4) 레이더 측정 시작</div>
+                <div class="log-message log-info">1) setup 실행 → 2) 서버 상태 확인 → 3) 포트 새로고침 → 4) 레이더 코드 업로드 → 5) Web Serial로 레이더 시작</div>
             </div>
         </div>
     </div>
@@ -1157,9 +1160,12 @@
                 <li><strong>핀 번호 설정:</strong> 초음파 센서의 <code>TRIG</code>(기본 7번), <code>ECHO</code>(기본 8번) 핀과 서보 모터 핀(기본 4번)을 입력합니다.</li>
                 <li><strong>모터 각도 조절:</strong> <strong>[2️⃣ 모터 작동 각도 조절 탭]</strong>에서 모터의 최소/최대 회전 각도(예: 10° ~ 170°)와 왕복 주기 시간(기본 4000ms)을 조절합니다.</li>
                 <li><strong>로컬 서버 연결 &amp; 업로드:</strong> 로컬 백엔드 서버를 실행한 뒤 <strong>[서버 상태 확인]</strong> → 포트 선택 → <strong>[⚡ 아두이노 레이더 코드 업로드]</strong> 버튼을 누릅니다.</li>
-                <li><strong>실시간 레이더 작동:</strong> <strong>[3️⃣ 실시간 초음파 레이더]</strong> 탭에서 <strong>[🔌 아두이노 시리얼 연결]</strong>(또는 로컬 서버 수신 / 데모 시뮬레이션)을 누르면 아두이노가 보내는 <code>angle,distance</code> 데이터를 받아 레이더를 실시간으로 그립니다.</li>
+                <li><strong>실시간 레이더 작동:</strong> <strong>[3️⃣ 실시간 초음파 레이더]</strong> 탭에서 <strong>[🔌 아두이노 시리얼 연결 (Web Serial)]</strong>을 누르고 아두이노 포트를 선택하면 <code>angle,distance</code> 데이터를 받아 레이더를 실시간으로 그립니다.</li>
             </ol>
-            <button id="btnHelpClose" class="btn btn-primary" type="button" style="width:100%;margin-top:12px;">닫기</button>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button id="btnOpenYoutubeHelp" class="btn btn-outline" type="button" style="flex:1;">🎬 유튜브 영상 가이드 열기</button>
+                <button id="btnHelpClose" class="btn btn-primary" type="button" style="flex:1;">닫기</button>
+            </div>
         </div>
     </div>
 
@@ -1175,16 +1181,16 @@
         </div>
     </div>
 
-    <!-- 4. 서버 연결 방법 모달 -->
+    <!-- 4. 서버 연결 방법 모달 (LEFTHUK 14장 이미지 슬라이더 동일 적용) -->
     <div id="serverGuideModal" class="modal">
-        <div class="modal-content" style="width: min(640px, 95%);">
-            <h3>🖥️ 로컬 서버 연결 방법 안내</h3>
-            <div class="info-box" style="margin-top: 10px;">
-                <p><strong>1단계:</strong> PC에서 Left HUK 로컬 업로더 프로그램(<code>setup.bat</code> 및 로컬 서버)을 실행합니다.</p>
-                <p><strong>2단계:</strong> 기본 주소는 <code>https://127.0.0.1:18443</code> 또는 <code>http://127.0.0.1:8000</code> 입니다.</p>
-                <p><strong>3단계:</strong> 상단의 <strong>[서버 상태 확인]</strong> 버튼을 눌러 <span style="color:#16a34a;font-weight:700;">서버 연결됨</span> 상태를 확인한 후 포트를 새로고침하여 업로드하세요.</p>
-                <p><strong>💡 팁:</strong> 브라우저(Chrome/Edge)에서 <strong>Web Serial API</strong>를 사용하면 코드가 업로드된 아두이노에서 직접 시리얼 데이터를 받아 레이더를 즉시 그릴 수 있습니다!</p>
+        <div class="modal-content" style="width: min(800px, 92%); text-align: center;">
+            <h3>서버 연결 방법</h3>
+            <div style="position: relative; display: flex; align-items: center; justify-content: center; margin: 15px 0; min-height: 260px;">
+                <button id="btnGuidePrev" class="btn btn-primary" type="button" style="position: absolute; left: 0; padding: 10px 14px; z-index: 2;">&#10094;</button>
+                <img id="guideSliderImage" src="https://lh3.googleusercontent.com/d/1Bdj8zaNysZWLfzqCRLRlOkOApZWv3Zs3" style="max-width: 100%; max-height: 55vh; object-fit: contain; border-radius: 8px;" alt="서버 연결 방법" />
+                <button id="btnGuideNext" class="btn btn-primary" type="button" style="position: absolute; right: 0; padding: 10px 14px; z-index: 2;">&#10095;</button>
             </div>
+            <p id="guideSliderPage" style="margin: 0; font-weight: 700; color: #555;">1 / 14</p>
             <button id="btnGuideClose" class="btn btn-primary" type="button" style="width:100%;margin-top:12px;">닫기</button>
         </div>
     </div>
@@ -1199,10 +1205,15 @@
 
     <script>
         // =========================================================
-        // 전역 상태 관리
+        // LEFTHUK 로컬 서버 기본 후보 주소 (LEFTHUK 코드와 100% 동일)
         // =========================================================
+        const DEFAULT_API_HTTP = "http://127.0.0.1:8000";
+        const DEFAULT_API_HTTPS_PRIMARY = "https://127.0.0.1:18443";
+        const DEFAULT_API_HTTPS_LEGACY = "https://127.0.0.1:8443";
+
+        // 전역 상태 관리
         const state = {
-            apiBase: "https://127.0.0.1:18443",
+            apiBase: DEFAULT_API_HTTPS_PRIMARY,
             serverConnected: false,
             trigPin: 7,
             echoPin: 8,
@@ -1210,16 +1221,15 @@
             minAngle: 10,
             maxAngle: 170,
             cycleMs: 4000,
-            rmax: 1.0, // 이미지 기본 1.0m (0.5m 선택 가능)
+            noServoLib: false, // Servo.h 미설치 환경을 위한 내장 PWM 모드
+            rmax: 1.0,
             showOuterArc: true,
             resetOnZero: true,
-            // 레이더 플롯 데이터 (파이썬 angle_dist_map 동일 구조: key = theta(rad), value = distance(m))
             angleDistMap: new Map(),
             currentTheta: null,
             currentDistanceM: null,
             currentAngleDeg: 0,
             currentDistanceCm: 0,
-            // 시리얼/시뮬레이션 상태
             serialPort: null,
             serialReader: null,
             isReadingSerial: false,
@@ -1229,15 +1239,13 @@
             simDirection: 1
         };
 
-        // 저장된 API_BASE 불러오기
+        // LEFTHUK와 동일한 localStorage 키("API_BASE") 사용
         try {
-            const savedApi = localStorage.getItem("lefthuk_api_base");
+            const savedApi = localStorage.getItem("API_BASE") || localStorage.getItem("lefthuk_api_base");
             if (savedApi) {
                 state.apiBase = savedApi;
             }
-        } catch (e) {
-            // 샌드박스 환경 무시
-        }
+        } catch (e) {}
 
         // =========================================================
         // 유틸리티 및 로그 출력
@@ -1261,12 +1269,90 @@
             document.getElementById("loadingOverlay").style.display = "none";
         }
 
+        function showProgress(percent, text) {
+            const bar = document.getElementById("progressBar");
+            const fill = document.getElementById("progressFill");
+            bar.style.display = "block";
+            fill.style.width = percent + "%";
+            fill.textContent = text || (percent + "%");
+        }
+
+        function hideProgress() {
+            const bar = document.getElementById("progressBar");
+            const fill = document.getElementById("progressFill");
+            bar.style.display = "none";
+            fill.style.width = "0%";
+            fill.textContent = "0%";
+        }
+
         // =========================================================
-        // 1. 아두이노 코드 자동 생성 (핀 번호 & 모터 각도 반영)
+        // 1. 아두이노 코드 자동 생성 (Servo.h 버전 & 내장 PWM 버전 지원)
         // =========================================================
         function generateArduinoCode() {
             const totalSteps = Math.max(1, (state.maxAngle - state.minAngle) * 2);
             const stepDelayUs = Math.round((state.cycleMs * 1000) / totalSteps);
+
+            if (state.noServoLib) {
+                // 로컬 서버(backend-uploader.exe)에 Servo 라이브러리가 없을 때도 100% 컴파일되는 내장 PWM 버전
+                return `// [호환 모드] 외부 Servo.h 라이브러리 없이 내장 PWM 펄스로 서보 모터 제어
+#define SERVO_PIN ${state.servoPin}
+#define TRIG_PIN ${state.trigPin}
+#define ECHO_PIN ${state.echoPin}
+
+const int MIN_ANGLE = ${state.minAngle};
+const int MAX_ANGLE = ${state.maxAngle};
+const unsigned long CYCLE_MS = ${state.cycleMs}UL;
+const int TOTAL_STEPS = (MAX_ANGLE - MIN_ANGLE) * 2;
+const unsigned long STEP_DELAY_US = CYCLE_MS * 1000UL / TOTAL_STEPS; // 약 ${stepDelayUs}µs
+
+void writeServoAngle(int angle) {
+  int pulseWidth = map(angle, 0, 180, 544, 2400);
+  digitalWrite(SERVO_PIN, HIGH);
+  delayMicroseconds(pulseWidth);
+  digitalWrite(SERVO_PIN, LOW);
+  delay(15);
+}
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(SERVO_PIN, OUTPUT);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+}
+
+void loop() {
+  for (int angle = MIN_ANGLE; angle <= MAX_ANGLE; angle++) {
+    measureAndSend(angle);
+    delayMicroseconds(STEP_DELAY_US);
+  }
+  for (int angle = MAX_ANGLE; angle >= MIN_ANGLE; angle--) {
+    measureAndSend(angle);
+    delayMicroseconds(STEP_DELAY_US);
+  }
+}
+
+void measureAndSend(int angle) {
+  writeServoAngle(angle);
+
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  unsigned long duration = pulseIn(ECHO_PIN, HIGH, 20000);
+  float distance;
+  if (duration == 0) {
+    distance = -1;
+  } else {
+    distance = (duration * 0.0343) / 2.0;
+  }
+
+  Serial.print(angle);
+  Serial.print(',');
+  Serial.println(distance);
+}`;
+            }
 
             return `#include <Servo.h>
 
@@ -1332,7 +1418,6 @@ void measureAndSend(int angle) {
         }
 
         function updateUIFromState() {
-            // 핀 배지 및 셀렉트 동기화
             document.getElementById("trigPinBadge").textContent = `D${state.trigPin} (${state.trigPin}번 핀)`;
             document.getElementById("echoPinBadge").textContent = `D${state.echoPin} (${state.echoPin}번 핀)`;
             document.getElementById("servoPinBadge").textContent = `D${state.servoPin} (${state.servoPin}번 핀)`;
@@ -1345,7 +1430,6 @@ void measureAndSend(int angle) {
             document.getElementById("modalEchoPin").value = String(state.echoPin);
             document.getElementById("modalServoPin").value = String(state.servoPin);
 
-            // 각도 UI 동기화
             document.getElementById("minAngleSlider").value = String(state.minAngle);
             document.getElementById("minAngleInput").value = String(state.minAngle);
             document.getElementById("maxAngleSlider").value = String(state.maxAngle);
@@ -1360,12 +1444,11 @@ void measureAndSend(int angle) {
                 `최소 ${state.minAngle}° ↔ 최대 ${state.maxAngle}° (총 ${totalSteps} 스텝/주기)`;
             document.getElementById("stepDelayPreview").textContent = `${stepDelayUs.toLocaleString()} µs`;
 
-            // 코드 프리뷰 업데이트
             document.getElementById("codeContent").textContent = generateArduinoCode();
         }
 
         // =========================================================
-        // 2. 반원 극좌표 레이더 렌더링 (이미지 & 파이썬 코드 100% 재현)
+        // 2. 반원 극좌표 레이더 렌더링
         // =========================================================
         function drawRadar() {
             const canvas = document.getElementById("radarCanvas");
@@ -1376,22 +1459,18 @@ void measureAndSend(int angle) {
             const H = canvas.height;
             ctx.clearRect(0, 0, W, H);
 
-            // 흰색 배경 (첨부 이미지 Figure 1 스타일)
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, W, H);
 
-            // 상단 타이틀: Remote Ultrasonic Radar System
             ctx.fillStyle = "#111111";
             ctx.font = "500 20px 'Pretendard', sans-serif";
             ctx.textAlign = "center";
             ctx.fillText("Remote Ultrasonic Radar System", W / 2, 42);
 
-            // 반원 중심점 및 반지름 설정
             const cx = W / 2;
             const cy = H - 52;
             const maxR = Math.min(W * 0.41, H - 125);
 
-            // 1) 동심원 반원 그리드 (5단계: 0.2, 0.4, 0.6, 0.8, 1.0 비율)
             const steps = 5;
             ctx.lineWidth = 1;
             for (let i = 1; i <= steps; i++) {
@@ -1403,7 +1482,6 @@ void measureAndSend(int angle) {
                 ctx.stroke();
             }
 
-            // 2) 방사형 각도 눈금선 및 라벨 (0°, 30°, 60°, 90°, 120°, 150°, 180°)
             const angles = [0, 30, 60, 90, 120, 150, 180];
             ctx.font = "500 14px sans-serif";
             ctx.fillStyle = "#111111";
@@ -1420,7 +1498,6 @@ void measureAndSend(int angle) {
                 ctx.lineWidth = (deg === 0 || deg === 180) ? 1.4 : 1.0;
                 ctx.stroke();
 
-                // 각도 텍스트 위치
                 const labelR = maxR + 24;
                 const lx = cx + labelR * Math.cos(rad);
                 const ly = cy - labelR * Math.sin(rad) + 5;
@@ -1428,7 +1505,6 @@ void measureAndSend(int angle) {
                 ctx.fillText(`${deg}°`, lx, ly);
             });
 
-            // 3) 하단 거리 축 라벨 (0.0, 0.2, 0.4, 0.6, 0.8, 1.0 또는 rmax 기준)
             ctx.font = "500 13.5px sans-serif";
             ctx.fillStyle = "#111111";
             ctx.textAlign = "center";
@@ -1438,11 +1514,9 @@ void measureAndSend(int angle) {
                 ctx.fillText(val, cx + r, cy + 22);
             }
 
-            // 4) 저장된 (theta, distance) 포인트 정렬 후 파란/시안 점선(dashed_line) & 점(points) 그리기
             const sortedThetas = Array.from(state.angleDistMap.keys()).sort((a, b) => a - b);
 
             if (sortedThetas.length > 0) {
-                // dashed_line: '--', color='cyan', linewidth=1.5
                 ctx.save();
                 ctx.beginPath();
                 ctx.setLineDash([5, 4]);
@@ -1463,7 +1537,6 @@ void measureAndSend(int angle) {
                 ctx.stroke();
                 ctx.restore();
 
-                // points: 'o', color='cyan', markersize=3.5
                 ctx.fillStyle = "#5cefff";
                 sortedThetas.forEach((theta) => {
                     const distM = state.angleDistMap.get(theta);
@@ -1476,7 +1549,6 @@ void measureAndSend(int angle) {
                 });
             }
 
-            // 5) current_line: '-', color='green', linewidth=2.5 (현재 스캔 중인 녹색 레이더 바늘)
             if (state.currentTheta !== null && state.currentDistanceM !== null) {
                 const normR = Math.min(1, Math.max(0, state.currentDistanceM / state.rmax)) * maxR;
                 const gx = cx + normR * Math.cos(state.currentTheta);
@@ -1494,7 +1566,7 @@ void measureAndSend(int angle) {
         }
 
         // =========================================================
-        // 3. 시리얼 데이터 파싱 및 레이더 업데이트 (파이썬 animate 함수 변환)
+        // 3. 시리얼 데이터 파싱 및 레이더 업데이트
         // =========================================================
         function processRadarLine(rawLine) {
             if (!rawLine) return;
@@ -1509,28 +1581,22 @@ void measureAndSend(int angle) {
 
             if (Number.isNaN(angleDeg) || Number.isNaN(distanceCm)) return;
 
-            // cm -> m 변환
             let distanceM = distanceCm / 100.0;
 
-            // 초음파 타임아웃(-1) 또는 측정 범위 초과 처리
             if (distanceCm < 0 || distanceM > state.rmax) {
                 if (state.showOuterArc) {
-                    // 이미지처럼 장애물이 없을 때 외곽 호(rmax * 0.96)에 표시
                     distanceM = state.rmax * 0.96;
                 } else {
                     return;
                 }
             }
 
-            // sweep 주기마다 맵 리셋 (0° 또는 MIN_ANGLE 도달 시)
             if (state.resetOnZero && (Math.round(angleDeg) === 0 || Math.round(angleDeg) === state.minAngle)) {
                 if (state.angleDistMap.size > 40) {
                     state.angleDistMap.clear();
                 }
             }
 
-            // 파이썬 코드 동일: theta = np.pi - np.deg2rad(angle_deg)
-            // 소수점 4자리 반올림으로 같은 각도 덮어쓰기 보장
             const theta = Number((Math.PI - (angleDeg * Math.PI) / 180.0).toFixed(4));
 
             state.angleDistMap.set(theta, distanceM);
@@ -1539,7 +1605,6 @@ void measureAndSend(int angle) {
             state.currentAngleDeg = angleDeg;
             state.currentDistanceCm = distanceCm;
 
-            // 하단 상태창 업데이트
             document.getElementById("statCurrentAngle").textContent = `${Math.round(angleDeg)}°`;
             document.getElementById("statCurrentCm").textContent =
                 distanceCm < 0 ? "감지 없음" : `${distanceCm.toFixed(1)} cm`;
@@ -1550,7 +1615,7 @@ void measureAndSend(int angle) {
         }
 
         // =========================================================
-        // 4. 시뮬레이션 모드 (아두이노 미연결 시에도 이미지처럼 즉시 작동 확인)
+        // 4. 시뮬레이션 모드
         // =========================================================
         function startSimulation() {
             stopSimulation();
@@ -1567,8 +1632,7 @@ void measureAndSend(int angle) {
 
             state.simTimer = setInterval(() => {
                 const a = state.simAngle;
-                // 첨부된 이미지(image_2ef519.png)와 유사한 물체 감지 패턴 생성
-                let simCm = state.rmax * 96; // 기본 외곽 호 (~96cm)
+                let simCm = state.rmax * 96;
                 if (Math.abs(a - 148) <= 2) {
                     simCm = 62.0 * state.rmax;
                 } else if (Math.abs(a - 92) <= 2) {
@@ -1610,7 +1674,7 @@ void measureAndSend(int angle) {
         // =========================================================
         async function connectWebSerial() {
             if (!("serial" in navigator)) {
-                addLog("현재 브라우저가 Web Serial API를 지원하지 않습니다. Chrome 또는 Edge 브라우저를 사용하거나 [로컬 서버에서 데이터 수신]을 이용해 주세요.", "warning");
+                addLog("현재 브라우저가 Web Serial API를 지원하지 않습니다. Chrome 또는 Edge 브라우저를 사용해 주세요.", "warning");
                 return;
             }
 
@@ -1630,7 +1694,7 @@ void measureAndSend(int angle) {
                 badge.className = "status status-connected";
                 badge.textContent = "시리얼 수신 중 (9600bps)";
                 document.getElementById("btnConnectWebSerial").textContent = "🔌 시리얼 연결 해제";
-                addLog("아두이노 Web Serial 포트가 연결되었습니다. 실시간 데이터를 수신합니다.", "success");
+                addLog("아두이노 Web Serial 포트가 연결되었습니다. 실시간 레이더 데이터를 수신합니다.", "success");
 
                 const textDecoder = new TextDecoderStream();
                 port.readable.pipeTo(textDecoder.writable);
@@ -1667,9 +1731,7 @@ void measureAndSend(int angle) {
                     await state.serialPort.close();
                     state.serialPort = null;
                 }
-            } catch (e) {
-                // ignore close errors
-            }
+            } catch (e) {}
             document.getElementById("btnConnectWebSerial").textContent = "🔌 아두이노 시리얼 연결 (Web Serial)";
             const badge = document.getElementById("serialStatusBadge");
             badge.className = "status status-disconnected";
@@ -1678,216 +1740,205 @@ void measureAndSend(int angle) {
         }
 
         // =========================================================
-        // 6. 로컬 서버 API 연동 (상태 확인, 포트 조회, 코드 업로드, 시리얼 폴링)
+        // 6. LEFTHUK 로컬 서버 API 연동 (LEFTHUK 스크립트와 100% 동일한 방식)
         // =========================================================
-        async function checkLocalServer() {
-            showLoading("로컬 서버 연결 상태를 확인하는 중...");
-            const endpoints = ["/health", "/api/health", "/status", "/api/status", "/ports", "/api/ports", "/"];
-            let connected = false;
+        function updateApiBaseUi() {
+            document.getElementById("apiBaseInput").value = state.apiBase;
+            document.getElementById("apiBaseNow").textContent = state.apiBase;
+        }
 
-            for (const ep of endpoints) {
-                try {
-                    const controller = new AbortController();
-                    const timer = setTimeout(() => controller.abort(), 2000);
-                    const res = await fetch(`${state.apiBase}${ep}`, {
-                        method: "GET",
-                        signal: controller.signal
-                    });
-                    clearTimeout(timer);
-                    if (res.ok) {
-                        connected = true;
-                        break;
-                    }
-                } catch (e) {
-                    // 다음 엔드포인트 시도
-                }
-            }
+        async function apiFetch(path, options = {}) {
+            return fetch(state.apiBase + path, { ...options, mode: "cors" });
+        }
 
-            hideLoading();
-            const statusEl = document.getElementById("serverStatus");
-            state.serverConnected = connected;
-
-            if (connected) {
-                statusEl.className = "status status-connected";
-                statusEl.textContent = "서버 연결됨";
-                addLog(`로컬 서버(${state.apiBase}) 연결 성공!`, "success");
-                await refreshPorts();
-            } else {
-                statusEl.className = "status status-disconnected";
-                statusEl.textContent = "서버 미연결";
-                addLog(`로컬 서버(${state.apiBase})에 연결할 수 없습니다. 로컬 서버 실행 여부를 확인하거나 시뮬레이션/Web Serial 기능을 이용하세요.`, "warning");
+        async function probe(base) {
+            try {
+                const r = await fetch(base + "/api/health", { mode: "cors" });
+                const j = await r.json();
+                return !!j.ok;
+            } catch {
+                return false;
             }
         }
 
-        async function autoDetectServer() {
-            showLoading("로컬 백엔드 서버 주소를 자동 감지하는 중...");
-            const candidates = [
-                "https://127.0.0.1:18443",
-                "http://127.0.0.1:8000",
-                "http://localhost:8000",
-                "https://localhost:18443",
-                "http://127.0.0.1:5000"
-            ];
+        async function autoPickApiBase() {
+            addLog("로컬 서버 자동 감지 중...", "info");
+
+            const candidates =
+                location.protocol === "https:"
+                    ? [DEFAULT_API_HTTPS_PRIMARY, DEFAULT_API_HTTPS_LEGACY, DEFAULT_API_HTTP]
+                    : [DEFAULT_API_HTTP, DEFAULT_API_HTTPS_PRIMARY, DEFAULT_API_HTTPS_LEGACY];
 
             for (const base of candidates) {
-                try {
-                    const controller = new AbortController();
-                    const timer = setTimeout(() => controller.abort(), 1500);
-                    const res = await fetch(`${base}/health`, { signal: controller.signal }).catch(() =>
-                        fetch(`${base}/ports`, { signal: controller.signal })
-                    );
-                    clearTimeout(timer);
-                    if (res && res.ok) {
-                        state.apiBase = base;
-                        document.getElementById("apiBaseInput").value = base;
-                        document.getElementById("apiBaseNow").textContent = base;
-                        hideLoading();
-                        addLog(`로컬 서버 자동 감지 성공: ${base}`, "success");
-                        await checkLocalServer();
-                        return;
-                    }
-                } catch (e) {
-                    // continue
+                const ok = await probe(base);
+                addLog(`서버 감지 (${base}): ${ok ? "OK" : "FAIL"}`, ok ? "success" : "warning");
+                if (ok) {
+                    state.apiBase = base;
+                    try {
+                        localStorage.setItem("API_BASE", base);
+                    } catch (e) {}
+                    updateApiBaseUi();
+                    return base;
                 }
             }
+            return null;
+        }
 
-            hideLoading();
-            addLog("실행 중인 로컬 서버를 찾지 못했습니다. 기본 주소(https://127.0.0.1:18443)를 유지합니다.", "warning");
+        async function checkLocalServer() {
+            showLoading("서버 상태를 확인하는 중입니다...");
+            addLog(`서버 상태 확인 중... (${state.apiBase}/api/health)`, "info");
+            try {
+                const r = await apiFetch("/api/health");
+                const j = await r.json();
+                if (!j.ok) throw new Error(j.stderr || "arduino-cli 실행 실패");
+
+                const statusEl = document.getElementById("serverStatus");
+                statusEl.textContent = "서버 연결됨";
+                statusEl.className = "status status-connected";
+                state.serverConnected = true;
+                addLog(`서버 OK (${j.version || "arduino-cli 확인됨"})`, "success");
+            } catch (e) {
+                const statusEl = document.getElementById("serverStatus");
+                statusEl.textContent = "서버 미연결";
+                statusEl.className = "status status-disconnected";
+                state.serverConnected = false;
+                addLog(`서버 오류: ${e.message || e}`, "error");
+                addLog("💡 [원인 안내] backend-uploader.exe(server.js)의 ALLOWED_ORIGINS에 현재 사이트 주소가 없거나, 로컬 파일(file://)로 열었을 때 CORS가 차단될 수 있습니다. 로컬 서버 폴더 내 public 폴더에 이 파일을 넣고 http://127.0.0.1:8000 또는 https://127.0.0.1:18443 으로 접속해 보세요.", "warning");
+            } finally {
+                hideLoading();
+            }
         }
 
         async function refreshPorts() {
-            const select = document.getElementById("portSelect");
+            showLoading("포트 목록을 새로고침하는 중입니다...");
+            addLog("포트 목록 가져오는 중...", "info");
             try {
-                const res = await fetch(`${state.apiBase}/ports`).catch(() =>
-                    fetch(`${state.apiBase}/api/ports`)
-                );
-                if (res && res.ok) {
-                    const data = await res.json();
-                    const ports = Array.isArray(data) ? data : (data.ports || []);
-                    select.innerHTML = `<option value="">포트를 선택하세요</option>`;
-                    ports.forEach((p) => {
-                        const portName = typeof p === "string" ? p : (p.port || p.device || p.path || "");
-                        const desc = typeof p === "object" && p.description ? ` (${p.description})` : "";
-                        if (portName) {
-                            const opt = document.createElement("option");
-                            opt.value = portName;
-                            opt.textContent = `${portName}${desc}`;
-                            select.appendChild(opt);
-                        }
-                    });
-                    if (ports.length > 0) {
-                        select.selectedIndex = 1;
-                    }
-                    addLog(`포트 목록 새로고침 완료 (${ports.length}개 발견)`, "success");
+                const r = await apiFetch("/api/ports");
+                const j = await r.json();
+                if (!j.ok) throw new Error(j.stderr || "포트 목록 실패");
+
+                const portSelect = document.getElementById("portSelect");
+                portSelect.innerHTML = '<option value="">포트를 선택하세요</option>';
+
+                const ports = (j.ports || []).filter(Boolean);
+                if (ports.length === 0) {
+                    addLog("포트를 찾을 수 없습니다. USB 연결/드라이버/권한을 확인하세요.", "warning");
                     return;
                 }
+
+                ports.forEach((p) => {
+                    const opt = document.createElement("option");
+                    if (typeof p === "object" && p !== null) {
+                        opt.value = p.port;
+                        opt.textContent = p.desc ? `${p.port} (${p.desc})` : p.port;
+                    } else {
+                        opt.value = p;
+                        opt.textContent = p;
+                    }
+                    portSelect.appendChild(opt);
+                });
+
+                if (ports.length > 0) {
+                    portSelect.selectedIndex = 1;
+                }
+
+                const portNames = ports.map((p) => (typeof p === "object" && p !== null ? p.port : p));
+                addLog(`${ports.length}개 포트 발견: ${portNames.join(", ")}`, "success");
             } catch (e) {
-                // fallback
+                addLog(`포트 목록 오류: ${e.message || e}`, "error");
+            } finally {
+                hideLoading();
             }
-            addLog("로컬 서버에서 포트 목록을 가져오지 못해 기본 포트 옵션을 표시합니다.", "info");
+        }
+
+        async function uploadWithCli({ port, fqbn, code, title }) {
+            addLog(`${title} 시작: ${port} / ${fqbn}`, "info");
+            showProgress(20, "컴파일/업로드 중...");
+
+            const r = await apiFetch("/api/upload", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ port, fqbn, code }),
+            });
+
+            const j = await r.json();
+
+            if (!j.ok) {
+                addLog(`실패 단계: ${j.step || "unknown"}`, "error");
+                if (j.stderr) addLog(j.stderr, "error");
+                if (j.stdout) addLog(j.stdout, "info");
+                if (j.stderr && /Servo\.h/i.test(j.stderr)) {
+                    addLog("💡 Servo.h 라이브러리가 로컬 서버에 없는 경우, 상단의 [Servo.h 미설치 환경 호환 모드(내장 PWM)] 체크박스를 켜고 다시 업로드하세요!", "warning");
+                }
+                throw new Error(j.stderr || "업로드 실패");
+            }
+
+            showProgress(100, "완료!");
+            addLog(`✅ ${title} 성공! 이제 [3️⃣ 실시간 초음파 레이더] 탭에서 Web Serial 연결을 눌러 레이더를 시작하세요.`, "success");
+            setTimeout(hideProgress, 1200);
         }
 
         async function uploadArduinoCode() {
             const port = document.getElementById("portSelect").value;
-            const board = document.getElementById("boardSelect").value;
+            const fqbn = document.getElementById("boardSelect").value;
             const code = generateArduinoCode();
 
             if (!port) {
-                addLog("업로드할 아두이노 포트를 먼저 선택해 주세요!", "warning");
+                addLog("업로드할 아두이노 포트를 먼저 선택해 주세요! (포트 목록 새로고침 필요)", "warning");
                 return;
             }
 
-            const progressBar = document.getElementById("progressBar");
-            const progressFill = document.getElementById("progressFill");
-            progressBar.style.display = "block";
-            progressFill.style.width = "25%";
-            progressFill.textContent = "25% (컴파일 및 로컬 서버 전송 중...)";
-
-            showLoading("아두이노 레이더 코드를 업로드하고 있습니다...");
-            addLog(`보드(${board}), 포트(${port})로 초음파 레이더 코드 업로드를 시작합니다...`, "info");
-
-            let uploaded = false;
-            const uploadEndpoints = ["/upload", "/api/upload", "/compile-upload"];
-
-            for (const ep of uploadEndpoints) {
-                try {
-                    const controller = new AbortController();
-                    const timer = setTimeout(() => controller.abort(), 15000);
-                    const res = await fetch(`${state.apiBase}${ep}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            board,
-                            fqbn: board,
-                            port,
-                            code,
-                            sketch: code
-                        }),
-                        signal: controller.signal
-                    });
-                    clearTimeout(timer);
-                    if (res.ok) {
-                        uploaded = true;
-                        break;
-                    }
-                } catch (e) {
-                    // try next endpoint
-                }
-            }
-
-            setTimeout(() => {
-                progressFill.style.width = "100%";
-                progressFill.textContent = uploaded ? "100% (업로드 완료!)" : "100% (코드 생성 완료)";
+            showLoading("아두이노 레이더 코드를 업로드하는 중입니다...");
+            try {
+                await uploadWithCli({
+                    port,
+                    fqbn,
+                    code,
+                    title: `초음파 레이더 업로드(TRIG=D${state.trigPin}, ECHO=D${state.echoPin}, SERVO=D${state.servoPin})`
+                });
+            } catch (e) {
+                hideProgress();
+                addLog(`업로드 오류: ${e.message || e}`, "error");
+            } finally {
                 hideLoading();
-
-                if (uploaded) {
-                    addLog("✅ 아두이노 레이더 코드 업로드가 완료되었습니다! 이제 [3️⃣ 실시간 초음파 레이더] 탭에서 측정을 시작하세요.", "success");
-                } else {
-                    addLog("로컬 업로더 서버 응답이 없어 업로드 시뮬레이션 및 아두이노 코드 생성을 완료했습니다. (로컬 서버 연결 시 즉시 업로드됩니다)", "warning");
-                }
-            }, 600);
+            }
         }
 
         function toggleServerSerialStream() {
-            if (state.serverPollTimer) {
-                clearInterval(state.serverPollTimer);
-                state.serverPollTimer = null;
-                document.getElementById("btnConnectServerSerial").textContent = "🖥️ 로컬 서버에서 데이터 수신";
-                const badge = document.getElementById("serialStatusBadge");
-                badge.className = "status status-disconnected";
-                badge.textContent = "데이터 대기 중";
-                addLog("로컬 서버 시리얼 수신을 중지했습니다.", "info");
-                return;
-            }
-
-            stopSimulation();
-            const port = document.getElementById("portSelect").value || "COM3";
-            const badge = document.getElementById("serialStatusBadge");
-            badge.className = "status status-connected";
-            badge.textContent = "로컬 서버 수신 대기 중";
-            document.getElementById("btnConnectServerSerial").textContent = "⏹️ 로컬 서버 수신 중지";
-            addLog(`로컬 서버(${state.apiBase})로부터 포트(${port}) 시리얼 데이터를 수신합니다.`, "info");
-
-            state.serverPollTimer = setInterval(async () => {
-                try {
-                    const res = await fetch(`${state.apiBase}/serial?port=${encodeURIComponent(port)}`).catch(() =>
-                        fetch(`${state.apiBase}/api/serial?port=${encodeURIComponent(port)}`)
-                    );
-                    if (res && res.ok) {
-                        const data = await res.json();
-                        const lines = Array.isArray(data.lines)
-                            ? data.lines
-                            : (typeof data.data === "string" ? data.data.split(/\r?\n/) : []);
-                        lines.forEach((line) => processRadarLine(line));
-                    }
-                } catch (e) {
-                    // ignore polling error
-                }
-            }, 60);
+            addLog("참고: LEFTHUK의 backend-uploader.exe(server.js)는 코드 업로드 전용 서버이며 시리얼 스트리밍 API(/api/serial)를 포함하고 있지 않습니다. 왼쪽의 [🔌 아두이노 시리얼 연결 (Web Serial)] 버튼을 눌러 브라우저에서 직접 아두이노 데이터를 수신하세요!", "info");
         }
 
         // =========================================================
-        // 7. 탭 전환 및 이벤트 바인딩
+        // 7. 서버 연결 방법 14페이지 가이드 슬라이더 (LEFTHUK 동일)
+        // =========================================================
+        let currentGuidePage = 1;
+        const totalGuidePages = 14;
+        const guideImages = [
+            "https://lh3.googleusercontent.com/d/1Bdj8zaNysZWLfzqCRLRlOkOApZWv3Zs3",
+            "https://lh3.googleusercontent.com/d/1Sk7iG5hkHiTPHLJL_4S1dJuMgMDiP4Yw",
+            "https://lh3.googleusercontent.com/d/1uxvLyGGPrlsImEY7qAvb3-s21duSpjQ8",
+            "https://lh3.googleusercontent.com/d/1Rny4QXo5cS3Y_pFsoC7zRPAS8wwObjZe",
+            "https://lh3.googleusercontent.com/d/1x_Ll1JJvFPAF9ygSfGyl1keSC5N2OoG2",
+            "https://lh3.googleusercontent.com/d/1RtXbJZV43fWLmz9UQtXmwuKr3XNpUI0G",
+            "https://lh3.googleusercontent.com/d/15RISawrSqiziQsFeO_WjGWvxFn_MK6eV",
+            "https://lh3.googleusercontent.com/d/1vdRHWmBn8v_V9v6CVeGdm0AihpSIkDsN",
+            "https://lh3.googleusercontent.com/d/1aAQIbUdbnhFuZiWb31FGCuad78kBtu9d",
+            "https://lh3.googleusercontent.com/d/14vrvy1oys3di-mVpvIL4Ocx7ZcCwlgS9",
+            "https://lh3.googleusercontent.com/d/1ZHtPzKtcrwbX-XJldQuCVVobQeXauVRA",
+            "https://lh3.googleusercontent.com/d/1-4kKF-LPkOBRYHNi0625uNGkI2nDSaQv",
+            "https://lh3.googleusercontent.com/d/1QZ1YUtVSJ0hYWoWY-KqB2LkVa3M8OO35",
+            "https://lh3.googleusercontent.com/d/1EQbL5-uVgNPxtniM54v8lYVk3VwaYAcf"
+        ];
+
+        function updateGuideImage() {
+            const imgEl = document.getElementById("guideSliderImage");
+            if (imgEl) imgEl.src = guideImages[currentGuidePage - 1];
+            const pageEl = document.getElementById("guideSliderPage");
+            if (pageEl) pageEl.textContent = `${currentGuidePage} / ${totalGuidePages}`;
+        }
+
+        // =========================================================
+        // 8. 탭 전환 및 이벤트 바인딩
         // =========================================================
         function switchTab(tabName) {
             document.querySelectorAll(".main-tab-btn").forEach((btn) => {
@@ -1916,7 +1967,6 @@ void measureAndSend(int angle) {
                 secRadar.style.display = "block";
                 drawRadar();
             } else {
-                // all
                 secSetup.style.display = "block";
                 secAngle.style.display = "block";
                 secUpload.style.display = "block";
@@ -1925,12 +1975,11 @@ void measureAndSend(int angle) {
             }
         }
 
-        window.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("apiBaseInput").value = state.apiBase;
-            document.getElementById("apiBaseNow").textContent = state.apiBase;
+        window.addEventListener("DOMContentLoaded", async () => {
+            updateApiBaseUi();
             updateUIFromState();
 
-            // 초기 데모 포인트 세팅 (첨부 이미지와 동일한 초기 프리뷰 제공)
+            // 초기 데모 포인트 세팅
             for (let deg = 10; deg <= 125; deg++) {
                 let dCm = 96.0;
                 if (Math.abs(deg - 34) <= 1) dCm = 62.0;
@@ -1959,7 +2008,6 @@ void measureAndSend(int angle) {
                 addLog(`핀 설정 완료: TRIG=D${state.trigPin}, ECHO=D${state.echoPin}, SERVO=D${state.servoPin}`, "success");
             });
 
-            // 핀 입력 모달 다시 열기 버튼들
             const openPinModal = () => {
                 document.getElementById("pinWizardModal").style.display = "flex";
             };
@@ -1984,6 +2032,18 @@ void measureAndSend(int angle) {
                 state.servoPin = parseInt(e.target.value, 10);
                 updateUIFromState();
                 addLog(`서보 모터(SERVO) 핀이 D${state.servoPin}번으로 변경되었습니다.`, "info");
+            });
+
+            // Servo.h 미사용 호환 모드 체크박스
+            document.getElementById("chkNoServoLib").addEventListener("change", (e) => {
+                state.noServoLib = e.target.checked;
+                updateUIFromState();
+                addLog(
+                    state.noServoLib
+                        ? "내장 PWM 서보 제어 모드 활성화 (Servo.h 라이브러리가 없어도 100% 컴파일됩니다)"
+                        : "표준 #include <Servo.h> 모드로 전환되었습니다.",
+                    "info"
+                );
             });
 
             // 모터 각도 슬라이더 & 입력창 연동
@@ -2015,7 +2075,6 @@ void measureAndSend(int angle) {
                 updateUIFromState();
             });
 
-            // 각도 프리셋 칩
             document.querySelectorAll(".preset-chip").forEach((chip) => {
                 chip.addEventListener("click", () => {
                     document.querySelectorAll(".preset-chip").forEach((c) => c.classList.remove("active"));
@@ -2025,26 +2084,47 @@ void measureAndSend(int angle) {
                 });
             });
 
-            // 서버 연결 카드 토글 (#ServerConnect)
-            document.getElementById("ServerConnect").addEventListener("click", () => {
+            // API 주소 카드 토글 및 LEFTHUK 서버 다운로드 링크
+            const toggleApiCard = () => {
                 const card = document.getElementById("apiBaseCard");
-                const isHidden = card.style.display === "none";
-                card.style.display = isHidden ? "block" : "none";
+                card.style.display = card.style.display === "none" ? "block" : "none";
+            };
+            document.getElementById("btnToggleApiBase").addEventListener("click", toggleApiCard);
+            document.getElementById("ServerConnect").addEventListener("click", () => {
+                window.open(
+                    "https://incheonedu-my.sharepoint.com/:u:/g/personal/jhu1596_o365_ice_go_kr/IQBidZP240_1TaWCY-eE_nTjAZFOX-Vaw8yW8RymZ5RGsOM?e=R1DHtS",
+                    "_blank"
+                );
+            });
+            document.getElementById("btnDownloadServerExe").addEventListener("click", () => {
+                window.open(
+                    "https://incheonedu-my.sharepoint.com/:u:/g/personal/jhu1596_o365_ice_go_kr/IQBidZP240_1TaWCY-eE_nTjAZFOX-Vaw8yW8RymZ5RGsOM?e=R1DHtS",
+                    "_blank"
+                );
             });
 
             document.getElementById("btnSaveApiBase").addEventListener("click", () => {
                 const val = document.getElementById("apiBaseInput").value.trim().replace(/\/+$/, "");
                 if (val) {
                     state.apiBase = val;
-                    document.getElementById("apiBaseNow").textContent = val;
+                    updateApiBaseUi();
                     try {
-                        localStorage.setItem("lefthuk_api_base", val);
+                        localStorage.setItem("API_BASE", val);
                     } catch (e) {}
-                    addLog(`API_BASE 주소가 ${val}로 저장되었습니다.`, "success");
+                    addLog(`API_BASE 저장: ${val}`, "success");
                 }
             });
 
-            document.getElementById("btnAutoDetect").addEventListener("click", autoDetectServer);
+            document.getElementById("btnAutoDetect").addEventListener("click", async () => {
+                const picked = await autoPickApiBase();
+                if (!picked) {
+                    addLog("자동 감지 실패: 로컬 백엔드 실행/인증서/CORS 허용 도메인을 확인하세요.", "error");
+                } else {
+                    await checkLocalServer();
+                    await refreshPorts();
+                }
+            });
+
             document.getElementById("btnCheckServer").addEventListener("click", checkLocalServer);
             document.getElementById("btnRefreshPorts").addEventListener("click", refreshPorts);
             document.getElementById("btnUploadRadarCode").addEventListener("click", uploadArduinoCode);
@@ -2053,7 +2133,6 @@ void measureAndSend(int angle) {
                 switchTab("radar");
             });
 
-            // 코드 보기/숨기기 및 복사
             document.getElementById("btnToggleCode").addEventListener("click", () => {
                 const preview = document.getElementById("codePreview");
                 preview.style.display = preview.style.display === "none" ? "block" : "none";
@@ -2114,7 +2193,6 @@ void measureAndSend(int angle) {
                 state.resetOnZero = e.target.checked;
             });
 
-            // 수동 패킷 전송
             document.getElementById("btnSendManualPacket").addEventListener("click", () => {
                 const val = document.getElementById("manualPacketInput").value;
                 processRadarLine(val);
@@ -2125,7 +2203,7 @@ void measureAndSend(int angle) {
                 document.getElementById("logSection").innerHTML = "";
             });
 
-            // 모달 열기/닫기 (사용법, 개발자, 서버 가이드)
+            // 모달 열기/닫기 (사용법, 개발자, 서버 가이드 14페이지 슬라이더)
             const helpModal = document.getElementById("helpModal");
             const devModal = document.getElementById("devModal");
             const guideModal = document.getElementById("serverGuideModal");
@@ -2135,6 +2213,9 @@ void measureAndSend(int angle) {
             });
             document.getElementById("hukCharImg").addEventListener("click", () => {
                 helpModal.style.display = "flex";
+            });
+            document.getElementById("btnOpenYoutubeHelp").addEventListener("click", () => {
+                window.open("https://youtu.be/KhtBjUw4Dms", "_blank");
             });
             document.getElementById("btnHelpClose").addEventListener("click", () => {
                 helpModal.style.display = "none";
@@ -2148,13 +2229,26 @@ void measureAndSend(int angle) {
             });
 
             document.getElementById("btnServerGuide").addEventListener("click", () => {
+                currentGuidePage = 1;
+                updateGuideImage();
                 guideModal.style.display = "flex";
+            });
+            document.getElementById("btnGuidePrev").addEventListener("click", () => {
+                if (currentGuidePage > 1) {
+                    currentGuidePage--;
+                    updateGuideImage();
+                }
+            });
+            document.getElementById("btnGuideNext").addEventListener("click", () => {
+                if (currentGuidePage < totalGuidePages) {
+                    currentGuidePage++;
+                    updateGuideImage();
+                }
             });
             document.getElementById("btnGuideClose").addEventListener("click", () => {
                 guideModal.style.display = "none";
             });
 
-            // 모달 배경 클릭 시 닫기
             [helpModal, devModal, guideModal].forEach((m) => {
                 m.addEventListener("click", (e) => {
                     if (e.target === m) m.style.display = "none";
@@ -2172,6 +2266,13 @@ void measureAndSend(int angle) {
                     : "📡 Left HUK - 아두이노 초음파 레이더 시스템 & 코드 업로더";
                 document.getElementById("btnHelp").textContent = isEn ? "Guide" : "사용법";
             });
+
+            // LEFTHUK와 동일하게 페이지 로드 시 자동으로 API_BASE 감지 및 서버/포트 조회 실행
+            await autoPickApiBase();
+            await checkLocalServer();
+            if (state.serverConnected) {
+                await refreshPorts();
+            }
         });
     </script>
 </body>

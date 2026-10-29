@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>(LEFTHUK)Huk.T의 데이터 사이언스 - 초음파 레이더 시스템</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Pretendard", "맑은 고딕", system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 20px 90px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 24px;
+            padding-top: 10px;
+        }
+
+        .header h1 {
+            font-size: 2.4em;
+            margin: 0 0 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,.22);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: .92;
+            margin: 0;
+        }
+
+        /* 상단 메인 워크플로 탭 */
+        .main-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .main-tab-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 13px 16px;
+            border: 2px solid rgba(255,255,255,0.65);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.18);
+            color: #fff;
+            font-size: 0.98em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s ease;
+            backdrop-filter: blur(8px);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .main-tab-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.28);
+        }
+
+        .main-tab-btn.active {
+            background: #fff;
+            color: #5b4bd6;
+            border-color: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.2);
+        }
+
+        .card h2 {
+            font-size: 1.45em;
+            margin: 0 0 20px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .connection-section {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            padding: 11px 22px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.96em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .25s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #20bf6b 0%, #0fb9b1 100%);
+            color: #fff;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(32,191,107,.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3b5a 0%, #fa8231 100%);
+            color: #fff;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(235,59,90,.4);
+        }
+
+        .btn-outline {
+            background: #f4f6fb;
+            color: #4b3bbd;
+            border: 2px solid #d8def8;
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            border-color: #667eea;
+            background: #eef1ff;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: .92em;
+            font-weight: 700;
+        }
+
+        .status-disconnected {
+            background: #ffe5e5;
+            color: #ff4757;
+        }
+
+        .status-connected {
+            background: #d4f8e8;
+            color: #16a34a;
+        }
+
+        .status-simulating {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .status::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: currentColor;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: .93em;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color .25s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* 핀 설정 버튼 카드 */
+        .pin-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .pin-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 18px;
+            background: #fafbff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+            transition: all .25s ease;
+        }
+
+        .pin-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(102,126,234,0.15);
+        }
+
+        .pin-card.configured {
+            border-color: #26de81;
+            background: #f0fdf4;
+        }
+
+        .pin-icon {
+            font-size: 2.2em;
+        }
+
+        .pin-title {
+            font-weight: 700;
+            font-size: 1.05em;
+            color: #222;
+        }
+
+        .pin-badge {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 999px;
+            background: #667eea;
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.95em;
+        }
+
+        .pin-quick-row {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .pin-quick-row select {
+            padding: 7px 10px;
+            border-radius: 8px;
+            border: 2px solid #cbd5e1;
+            font-weight: 600;
+            font-family: inherit;
+        }
+
+        /* 각도 조절 탭 내부 스타일 */
+        .angle-control-box {
+            background: #f8faff;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .angle-range-visual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .angle-Readout {
+            font-size: 1.25em;
+            font-weight: 800;
+            color: #4b3bbd;
+            background: #eef1ff;
+            padding: 8px 16px;
+            border-radius: 10px;
+        }
+
+        .preset-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .preset-chip {
+            padding: 7px 14px;
+            border-radius: 999px;
+            border: 1.5px solid #cbd5e1;
+            background: #fff;
+            font-size: 0.88em;
+            font-weight: 700;
+            color: #444;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .preset-chip:hover, .preset-chip.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: #fff;
+        }
+
+        /* 레이더 캔버스 컨테이너 (이미지 스타일 재현) */
+        .radar-wrapper {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .radar-wrapper.dark-theme {
+            background: #0f172a;
+            border-color: #1e293b;
+        }
+
+        #radarCanvas {
+            width: 100%;
+            max-width: 720px;
+            height: auto;
+            aspect-ratio: 16 / 10;
+            display: block;
+        }
+
+        .radar-stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .stat-pill {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            text-align: center;
+        }
+
+        .stat-pill .label {
+            font-size: 0.82em;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .stat-pill .val {
+            font-size: 1.25em;
+            font-weight: 800;
+            color: #1e293b;
+            margin-top: 3px;
+        }
+
+        .code-preview {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 18px;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .code-preview pre {
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: .88em;
+            line-height: 1.55;
+            color: #f8fafc;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+        }
+
+        .log-section {
+            margin-top: 14px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ececec;
+        }
+
+        .log-message {
+            padding: 6px 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-size: .9em;
+            font-family: "Consolas", monospace;
+        }
+
+        .log-info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .log-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .log-error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .log-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            color: #1565c0;
+            font-size: .9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 28px;
+            background: #e0e0e0;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width .3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: .88em;
+        }
+
+        /* 카드 밖 오른쪽 끝 정렬용 액션 바 */
+        .card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .btn-ServerConnect, .btn-dev-outside {
+            padding: 9px 15px;
+            font-size: 13px;
+            border-radius: 18px;
+        }
+
+        /* 모달 공통 */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 7000;
+            padding: 16px;
+        }
+
+        .modal-content {
+            width: min(560px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,.3);
+        }
+
+        .modal-content h3 {
+            margin: 0 0 12px;
+            color: #222;
+            font-size: 1.3em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .modal-content p {
+            margin: 0 0 10px;
+            color: #444;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        /* 오른쪽 하단 캐릭터 + 사용법 버튼 */
+        .huk-floating {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            text-align: center;
+            z-index: 5500;
+        }
+
+        .huk-floating img {
+            height: 115px;
+            width: auto;
+            display: block;
+            margin: 6px auto 4px;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,.25));
+            cursor: pointer;
+            transition: transform .2s ease;
+        }
+
+        .huk-floating img:hover {
+            transform: scale(1.05);
+        }
+
+        .huk-floating button {
+            background: rgba(255,255,255,0.95);
+            color: #3a3a3a;
+            border: 2px solid #667eea;
+            border-radius: 16px;
+            padding: 8px 14px;
+            font-size: 12.5px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform .15s ease, background .15s ease;
+        }
+
+        .huk-floating button:hover {
+            transform: translateY(-2px);
+            background: #ffffff;
+        }
+
+        /* 업로더/데이터 고정 네비 */
+        .site-switch {
+            display: flex;
+            flex-direction: column;
+            width: 92px;
+            position: fixed;
+            top: 52px;
+            right: 14px;
+            z-index: 6000;
+            gap: 7px;
+            align-items: stretch;
+            padding: 7px 8px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.45);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,.18);
+        }
+
+        .switch-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 64px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.55);
+            transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+            cursor: pointer;
+        }
+
+        .switch-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.18);
+        }
+
+        .switch-btn.is-active {
+            background: #fff;
+            color: #5b4bd6;
+            border-color: #fff;
+        }
+
+        .switch-btn.is-inactive {
+            background: rgba(0,0,0,0.12);
+            color: #fff;
+            border-color: rgba(255,255,255,0.55);
+        }
+
+        /* 언어 선택 드롭다운 (우상단) */
+        .lang-picker {
+            position: fixed;
+            top: 10px;
+            right: 14px;
+            z-index: 6500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lang-picker select {
+            width: 140px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.55);
+            background: rgba(255,255,255,0.92);
+            font-weight: 800;
+            font-size: 11px;
+            outline: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,.12);
+        }
+
+        /* 로딩 오버레이 UI */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-card {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loadingMessage {
+            margin: 0;
+            color: #333;
+            font-weight: 700;
+            font-size: 1.05em;
+        }
+
+        .step-guide-list {
+            padding-left: 18px;
+            margin: 10px 0;
+            color: #333;
+            line-height: 1.7;
+            font-size: 0.94em;
+        }
+
+        .step-guide-list li {
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75em;
+            }
+            .card {
+                padding: 18px;
+            }
+            .site-switch {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="titleMain">Huk.T의 데이터 사이언스</h1>
+            <p id="subtitleMain">📡 Left HUK - 아두이노 초음파 레이더 시스템 &amp; 코드 업로더</p>
+        </div>
+
+        <!-- 우측 상단: 언어 설정 -->
+        <div class="lang-picker">
+            <span aria-hidden="true">🌐</span>
+            <select id="langSelect" aria-label="Language">
+                <option value="ko">한국어 (KO)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
+        <!-- 오른쪽 상단: 사이트 이동 -->
+        <div class="site-nav-topright">
+            <nav class="site-switch" aria-label="사이트 이동">
+                <a class="switch-btn is-active" href="https://joo.is/lefthuk" target="_blank" rel="noopener">업로더</a>
+                <a class="switch-btn is-inactive" href="https://joo.is/righthuk" target="_blank" rel="noopener">데이터</a>
+                <a class="switch-btn is-inactive" href="https://joo.is/reporthuk" target="_blank" rel="noopener">보고서</a>
+                <a class="switch-btn is-inactive" href="https://joo.is/dashboardhuk" target="_blank" rel="noopener">대시보드</a>
+                <a class="switch-btn is-inactive" href="https://jhu1596.github.io/extendhuk/" target="_blank" rel="noopener">확장</a>
+                <a class="switch-btn is-inactive" href="https://joo.is/sharehuk" target="_blank" rel="noopener">커뮤니티</a>
+            </nav>
+        </div>
+
+        <!-- 로컬 업로더 상태 카드 밖 오른쪽 끝: 서버 연결 / 초기 핀 설정 / 개발자 버튼 -->
+        <div class="card-actions">
+            <button id="btnOpenPinWizard" class="btn btn-primary btn-ServerConnect">📌 핀 번호 다시 입력</button>
+            <button id="ServerConnect" class="btn btn-primary btn-ServerConnect">🖥️ 서버 주소 설정</button>
+            <button id="btnDev" class="btn btn-primary btn-dev-outside">👨‍🏫 개발자</button>
+        </div>
+
+        <!-- 상단 탭 네비게이션 (1. 핀 및 서버 설정 / 2. 모터 각도 조절 탭 / 3. 실시간 레이더 화면) -->
+        <div class="main-tabs" role="tablist">
+            <button id="tabBtnSetup" class="main-tab-btn active" type="button" data-tab="setup">
+                <span>1️⃣ 핀 설정 &amp; 코드 업로드</span>
+            </button>
+            <button id="tabBtnAngle" class="main-tab-btn" type="button" data-tab="angle">
+                <span>2️⃣ 모터 작동 각도 조절 탭</span>
+            </button>
+            <button id="tabBtnRadar" class="main-tab-btn" type="button" data-tab="radar">
+                <span>3️⃣ 실시간 초음파 레이더</span>
+            </button>
+            <button id="tabBtnAll" class="main-tab-btn" type="button" data-tab="all">
+                <span>📋 한눈에 모두 보기</span>
+            </button>
+        </div>
+
+        <!-- 숨김/토글 가능한 API_BASE 설정 카드 -->
+        <div class="card" id="apiBaseCard" style="display: none;">
+            <h2>🖥️ 로컬 백엔드 주소(API_BASE)</h2>
+            <div class="info-box">
+                <p>✅ HTTPS 권장: <code>https://127.0.0.1:18443</code> (setup.bat로 인증서 설치 후)</p>
+                <p>✅ HTTP(테스트용): <code>http://127.0.0.1:8000</code></p>
+                <p>⚠️ HTTPS 배포 페이지에서는 HTTP가 차단될 수 있어 HTTPS 로컬 서버 연결을 권장합니다.</p>
+            </div>
+
+            <div class="connection-section">
+                <div class="form-group" style="flex:1;margin:0;">
+                    <label for="apiBaseInput">로컬 서버 주소(API_BASE)</label>
+                    <input id="apiBaseInput" type="text" value="https://127.0.0.1:18443" />
+                </div>
+                <button id="btnSaveApiBase" class="btn btn-primary" type="button">저장</button>
+                <button id="btnAutoDetect" class="btn btn-primary" type="button">자동 감지</button>
+            </div>
+
+            <div style="margin-top:10px;color:#555;font-size:.9em;">
+                현재 API_BASE: <code id="apiBaseNow">https://127.0.0.1:18443</code>
+            </div>
+        </div>
+
+        <!-- [섹션 A] 로컬 서버 & 포트 연결 + 핀 설정 -->
+        <div id="sectionSetup">
+            <div class="card">
+                <h2>
+                    <span>🖥️ 로컬 서버 &amp; 아두이노 연결 상태</span>
+                    <button id="btnServerGuide" class="btn btn-primary" type="button" style="padding: 6px 12px; font-size: 13px; border-radius: 8px;">서버 연결 방법</button>
+                </h2>
+                <div class="connection-section">
+                    <button id="btnCheckServer" class="btn btn-primary" type="button">서버 상태 확인</button>
+                    <span id="serverStatus" class="status status-disconnected">서버 미연결</span>
+
+                    <div class="form-group" style="min-width: 170px; margin: 0;">
+                        <select id="boardSelect" aria-label="보드 타입">
+                            <option value="arduino:avr:uno">Arduino UNO</option>
+                            <option value="arduino:avr:nano">Arduino Nano</option>
+                            <option value="arduino:avr:mega">Arduino Mega</option>
+                        </select>
+                    </div>
+
+                    <button id="btnRefreshPorts" class="btn btn-outline" type="button">포트 목록 새로고침</button>
+                    <div class="form-group" style="flex:1; min-width: 180px; margin:0;">
+                        <select id="portSelect" aria-label="아두이노 포트 선택">
+                            <option value="">포트를 선택하세요 (예: COM3, /dev/ttyUSB0)</option>
+                            <option value="COM3">COM3 (Arduino UNO)</option>
+                            <option value="COM4">COM4</option>
+                            <option value="/dev/ttyUSB0">/dev/ttyUSB0</option>
+                            <option value="/dev/ttyACM0">/dev/ttyACM0</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. 초음파 센서(TRIG, ECHO) 및 서보 모터 핀 입력 카드 -->
+            <div class="card">
+                <h2>
+                    <span>🔌 1단계: 초음파 센서(TRIG, ECHO) 및 모터 핀 설정</span>
+                    <button id="btnPromptPinsModal" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">대화창으로 핀 입력하기</button>
+                </h2>
+                <p style="margin: 0 0 14px; color: #555; font-size: 0.95em;">
+                    아두이노에 연결된 <strong>초음파 센서(TRIG, ECHO)</strong> 핀과 <strong>서보 모터(SERVO)</strong> 핀을 아래 버튼이나 선택창으로 설정하세요.
+                </p>
+
+                <div class="pin-cards-grid">
+                    <!-- TRIG 핀 -->
+                    <div class="pin-card configured" id="trigPinCard">
+                        <span class="pin-icon">📡</span>
+                        <div class="pin-title">초음파 TRIG 핀</div>
+                        <span class="pin-badge" id="trigPinBadge">D7 (7번 핀)</span>
+                        <div class="pin-quick-row">
+                            <select id="trigPinSelect" aria-label="TRIG 핀 번호">
+                                <option value="2">D2 (2번)</option>
+                                <option value="3">D3 (3번)</option>
+                                <option value="4">D4 (4번)</option>
+                                <option value="5">D5 (5번)</option>
+                                <option value="6">D6 (6번)</option>
+                                <option value="7" selected>D7 (7번 - 기본)</option>
+                                <option value="8">D8 (8번)</option>
+                                <option value="9">D9 (9번)</option>
+                                <option value="10">D10 (10번)</option>
+                                <option value="11">D11 (11번)</option>
+                                <option value="12">D12 (12번)</option>
+                                <option value="13">D13 (13번)</option>
+                            </select>
+                            <button type="button" class="btn btn-primary" id="btnFocusTrig" style="padding: 7px 12px; font-size: 0.85em;">핀 입력</button>
+                        </div>
+                    </div>
+
+                    <!-- ECHO 핀 -->
+                    <div class="pin-card configured" id="echoPinCard">
+                        <span class="pin-icon">🔊</span>
+                        <div class="pin-title">초음파 ECHO 핀</div>
+                        <span class="pin-badge" id="echoPinBadge">D8 (8번 핀)</span>
+                        <div class="pin-quick-row">
+                            <select id="echoPinSelect" aria-label="ECHO 핀 번호">
+                                <option value="2">D2 (2번)</option>
+                                <option value="3">D3 (3번)</option>
+                                <option value="4">D4 (4번)</option>
+                                <option value="5">D5 (5번)</option>
+                                <option value="6">D6 (6번)</option>
+                                <option value="7">D7 (7번)</option>
+                                <option value="8" selected>D8 (8번 - 기본)</option>
+                                <option value="9">D9 (9번)</option>
+                                <option value="10">D10 (10번)</option>
+                                <option value="11">D11 (11번)</option>
+                                <option value="12">D12 (12번)</option>
+                                <option value="13">D13 (13번)</option>
+                            </select>
+                            <button type="button" class="btn btn-primary" id="btnFocusEcho" style="padding: 7px 12px; font-size: 0.85em;">핀 입력</button>
+                        </div>
+                    </div>
+
+                    <!-- 서보 모터 핀 -->
+                    <div class="pin-card configured" id="servoPinCard">
+                        <span class="pin-icon">⚙️</span>
+                        <div class="pin-title">서보 모터(SERVO) 핀</div>
+                        <span class="pin-badge" id="servoPinBadge">D4 (4번 핀)</span>
+                        <div class="pin-quick-row">
+                            <select id="servoPinSelect" aria-label="모터 핀 번호">
+                                <option value="2">D2 (2번)</option>
+                                <option value="3">D3 (3번 PWM)</option>
+                                <option value="4" selected>D4 (4번 - 기본)</option>
+                                <option value="5">D5 (5번 PWM)</option>
+                                <option value="6">D6 (6번 PWM)</option>
+                                <option value="7">D7 (7번)</option>
+                                <option value="8">D8 (8번)</option>
+                                <option value="9">D9 (9번 PWM)</option>
+                                <option value="10">D10 (10번 PWM)</option>
+                                <option value="11">D11 (11번 PWM)</option>
+                                <option value="12">D12 (12번)</option>
+                                <option value="13">D13 (13번)</option>
+                            </select>
+                            <button type="button" class="btn btn-primary" id="btnFocusServo" style="padding: 7px 12px; font-size: 0.85em;">모터 핀 입력</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- [섹션 B] 2. 모터가 작동되는 각도를 조절하는 탭 -->
+        <div id="sectionAngle" style="display: none;">
+            <div class="card">
+                <h2>
+                    <span>📐 2단계: 모터 작동 각도 및 스윕 주기 조절</span>
+                    <span class="angle-Readout" id="angleSummaryBadge">10° ~ 170° (주기 4.0초)</span>
+                </h2>
+
+                <div class="angle-control-box">
+                    <div class="angle-range-visual">
+                        <div>
+                            <strong>현재 모터 회전 범위:</strong>
+                            <span id="angleRangeText" style="color:#4b3bbd; font-weight:700;">최소 10° ↔ 최대 170° (총 320 스텝/주기)</span>
+                        </div>
+                        <div>
+                            <span style="font-size:0.9em; color:#666;">스텝당 대기시간(STEP_DELAY_US): <strong id="stepDelayPreview">12500 µs</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label for="minAngleInput">최소 각도 (MIN_ANGLE: 0° ~ 179°)</label>
+                            <input type="range" id="minAngleSlider" min="0" max="170" value="10" style="margin-bottom: 6px;" />
+                            <input type="number" id="minAngleInput" min="0" max="170" value="10" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxAngleInput">최대 각도 (MAX_ANGLE: 1° ~ 180°)</label>
+                            <input type="range" id="maxAngleSlider" min="10" max="180" value="170" style="margin-bottom: 6px;" />
+                            <input type="number" id="maxAngleInput" min="10" max="180" value="170" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cycleMsInput">왕복 1주기 시간 (CYCLE_MS, 밀리초)</label>
+                            <input type="number" id="cycleMsInput" min="1000" max="20000" step="500" value="4000" />
+                            <small style="color:#666; margin-top:4px;">기본 4000ms (4초에 왕복 1회 회전)</small>
+                        </div>
+                    </div>
+
+                    <div>
+                        <strong style="font-size: 0.9em; color: #555;">⚡ 빠른 각도 프리셋 선택:</strong>
+                        <div class="preset-chips">
+                            <button type="button" class="preset-chip active" data-min="10" data-max="170">기본 레이더 (10° ~ 170°)</button>
+                            <button type="button" class="preset-chip" data-min="0" data-max="180">전체 반원 (0° ~ 180°)</button>
+                            <button type="button" class="preset-chip" data-min="30" data-max="150">전방 120° 집중 (30° ~ 150°)</button>
+                            <button type="button" class="preset-chip" data-min="45" data-max="135">전방 90° 정밀 (45° ~ 135°)</button>
+                            <button type="button" class="preset-chip" data-min="60" data-max="120">좁은 구역 (60° ~ 120°)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- [공통 업로드 카드] 3. 아두이노 코드 업로드 버튼 & 코드 미리보기 -->
+        <div id="sectionUploadCard">
+            <div class="card">
+                <h2>
+                    <span>🚀 3단계: 아두이노 레이더 코드 생성 및 업로드</span>
+                    <div style="display:flex; gap:8px;">
+                        <button id="btnToggleCode" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">코드 보기/숨기기</button>
+                        <button id="btnCopyCode" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">📋 코드 복사</button>
+                    </div>
+                </h2>
+
+                <div class="connection-section">
+                    <button id="btnUploadRadarCode" class="btn btn-primary" type="button" style="padding: 14px 28px; font-size: 1.05em;">
+                        ⚡ 아두이노 레이더 코드 업로드
+                    </button>
+                    <button id="btnGoToRadarTab" class="btn btn-success" type="button" style="padding: 14px 22px;">
+                        📡 레이더 화면으로 이동
+                    </button>
+                </div>
+
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill">0%</div>
+                </div>
+
+                <div class="code-preview" id="codePreview">
+                    <pre id="codeContent"></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- [섹션 C] 5 & 6. 실시간 레이더 작동 화면 (파이썬 matplotlib 극좌표 플롯 완벽 재현) -->
+        <div id="sectionRadar" style="display: none;">
+            <div class="card">
+                <h2>
+                    <span>🎯 Remote Ultrasonic Radar System (실시간 레이더)</span>
+                    <span id="serialStatusBadge" class="status status-disconnected">데이터 대기 중</span>
+                </h2>
+
+                <div class="connection-section" style="justify-content: space-between;">
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button id="btnConnectWebSerial" class="btn btn-primary" type="button">
+                            🔌 아두이노 시리얼 연결 (Web Serial)
+                        </button>
+                        <button id="btnConnectServerSerial" class="btn btn-outline" type="button">
+                            🖥️ 로컬 서버에서 데이터 수신
+                        </button>
+                        <button id="btnToggleSim" class="btn btn-success" type="button">
+                            ▶️ 데모 시뮬레이션 시작
+                        </button>
+                        <button id="btnClearRadar" class="btn btn-outline" type="button">
+                            🧹 레이더 맵 초기화
+                        </button>
+                    </div>
+
+                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                        <label style="font-size:0.9em; font-weight:600; color:#444; display:flex; align-items:center; gap:6px;">
+                            최대 반경(R_MAX):
+                            <select id="rmaxSelect" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-weight:700;">
+                                <option value="0.5">0.5 m (파이썬 기본)</option>
+                                <option value="1.0" selected>1.0 m (이미지 동일)</option>
+                                <option value="2.0">2.0 m (장거리)</option>
+                            </select>
+                        </label>
+                        <label style="font-size:0.88em; font-weight:600; color:#444; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                            <input type="checkbox" id="chkShowOuterArc" checked />
+                            미감지 시 외곽 호 표시
+                        </label>
+                        <label style="font-size:0.88em; font-weight:600; color:#444; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                            <input type="checkbox" id="chkResetOnZero" checked />
+                            주기 시작점 리셋
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 레이더 캔버스 (첨부 이미지와 동일한 반원 극좌표 레이더) -->
+                <div class="radar-wrapper" id="radarWrapper">
+                    <canvas id="radarCanvas" width="760" height="470"></canvas>
+
+                    <div class="radar-stats-bar">
+                        <div class="stat-pill">
+                            <div class="label">현재 모터 각도 (Angle)</div>
+                            <div class="val" id="statCurrentAngle">0°</div>
+                        </div>
+                        <div class="stat-pill">
+                            <div class="label">측정 거리 (cm)</div>
+                            <div class="val" id="statCurrentCm">-- cm</div>
+                        </div>
+                        <div class="stat-pill">
+                            <div class="label">측정 거리 (m)</div>
+                            <div class="val" id="statCurrentM">-- m</div>
+                        </div>
+                        <div class="stat-pill">
+                            <div class="label">저장된 스캔 포인트</div>
+                            <div class="val" id="statPointCount">0 개</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 수동 데이터 테스트 입력 바 -->
+                <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: #f8fafc; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                    <span style="font-size: 0.88em; font-weight: 700; color: #475569;">🧪 수동 데이터 패킷 테스트 (angle,distance_cm):</span>
+                    <input type="text" id="manualPacketInput" value="120,55.0" placeholder="예: 90,45.2" style="padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; width: 140px; font-family: monospace;" />
+                    <button type="button" id="btnSendManualPacket" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.86em;">데이터 주입</button>
+                    <span style="font-size: 0.82em; color: #64748b;">(아두이노가 보내는 <code>각도,거리(cm)</code> 문자열을 직접 입력해 볼 수 있습니다)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 업로드 및 데이터 수신 로그 카드 -->
+        <div class="card">
+            <h2>
+                <span>📋 시스템 &amp; 시리얼 로그</span>
+                <button id="btnClearLog" class="btn btn-outline" type="button" style="padding: 5px 12px; font-size: 12px;">로그 지우기</button>
+            </h2>
+            <div class="log-section" id="logSection">
+                <div class="log-message log-info">1) 초음파(TRIG, ECHO) 및 모터 핀 확인 → 2) 각도 조절 → 3) 로컬 서버 연결 후 코드 업로드 → 4) 레이더 측정 시작</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 오른쪽 하단: 캐릭터 + 사용법 버튼 -->
+    <div class="huk-floating">
+        <button id="btnHelp" type="button">사용법</button>
+        <img id="hukCharImg" src="https://lh3.googleusercontent.com/d/1zBWvt8nrhCOPk47fCJLsdgR0BkFBk2QH" alt="HUK character" />
+    </div>
+
+    <!-- 1. 사이트 진입 시 핀 번호 입력 안내 모달 -->
+    <div id="pinWizardModal" class="modal" style="display: flex;">
+        <div class="modal-content">
+            <h3>🔌 초음파 레이더 핀 번호 설정</h3>
+            <p>
+                환영합니다! 아두이노에 연결된 <strong>초음파 센서(TRIG, ECHO)</strong> 핀과 <strong>서보 모터(SERVO)</strong> 핀 번호를 선택해 주세요.
+            </p>
+
+            <div class="settings-grid" style="grid-template-columns: 1fr; gap: 14px; margin: 16px 0;">
+                <div class="form-group">
+                    <label for="modalTrigPin">📡 초음파 센서 TRIG 핀 번호</label>
+                    <input type="number" id="modalTrigPin" min="2" max="13" value="7" />
+                </div>
+                <div class="form-group">
+                    <label for="modalEchoPin">🔊 초음파 센서 ECHO 핀 번호</label>
+                    <input type="number" id="modalEchoPin" min="2" max="13" value="8" />
+                </div>
+                <div class="form-group">
+                    <label for="modalServoPin">⚙️ 서보 모터(SERVO) 연결 핀 번호</label>
+                    <input type="number" id="modalServoPin" min="2" max="13" value="4" />
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button id="btnApplyModalPins" class="btn btn-primary" type="button" style="flex: 1;">
+                    ✅ 핀 설정 완료 및 시작하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 사용법 모달 (#btnHelp 클릭 시) -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <h3>📖 초음파 레이더 웹사이트 사용법</h3>
+            <ol class="step-guide-list">
+                <li><strong>핀 번호 설정:</strong> 초음파 센서의 <code>TRIG</code>(기본 7번), <code>ECHO</code>(기본 8번) 핀과 서보 모터 핀(기본 4번)을 입력합니다.</li>
+                <li><strong>모터 각도 조절:</strong> <strong>[2️⃣ 모터 작동 각도 조절 탭]</strong>에서 모터의 최소/최대 회전 각도(예: 10° ~ 170°)와 왕복 주기 시간(기본 4000ms)을 조절합니다.</li>
+                <li><strong>로컬 서버 연결 &amp; 업로드:</strong> 로컬 백엔드 서버를 실행한 뒤 <strong>[서버 상태 확인]</strong> → 포트 선택 → <strong>[⚡ 아두이노 레이더 코드 업로드]</strong> 버튼을 누릅니다.</li>
+                <li><strong>실시간 레이더 작동:</strong> <strong>[3️⃣ 실시간 초음파 레이더]</strong> 탭에서 <strong>[🔌 아두이노 시리얼 연결]</strong>(또는 로컬 서버 수신 / 데모 시뮬레이션)을 누르면 아두이노가 보내는 <code>angle,distance</code> 데이터를 받아 레이더를 실시간으로 그립니다.</li>
+            </ol>
+            <button id="btnHelpClose" class="btn btn-primary" type="button" style="width:100%;margin-top:12px;">닫기</button>
+        </div>
+    </div>
+
+    <!-- 3. 개발자 소개 모달 -->
+    <div id="devModal" class="modal">
+        <div class="modal-content">
+            <h3>개발자 소개</h3>
+            <p>
+                인천광역시 교사 장희욱<br />
+                문의 사항: jhu1596@naver.com
+            </p>
+            <button id="btnDevClose" class="btn btn-primary" type="button" style="width:100%;margin-top:12px;">닫기</button>
+        </div>
+    </div>
+
+    <!-- 4. 서버 연결 방법 모달 -->
+    <div id="serverGuideModal" class="modal">
+        <div class="modal-content" style="width: min(640px, 95%);">
+            <h3>🖥️ 로컬 서버 연결 방법 안내</h3>
+            <div class="info-box" style="margin-top: 10px;">
+                <p><strong>1단계:</strong> PC에서 Left HUK 로컬 업로더 프로그램(<code>setup.bat</code> 및 로컬 서버)을 실행합니다.</p>
+                <p><strong>2단계:</strong> 기본 주소는 <code>https://127.0.0.1:18443</code> 또는 <code>http://127.0.0.1:8000</code> 입니다.</p>
+                <p><strong>3단계:</strong> 상단의 <strong>[서버 상태 확인]</strong> 버튼을 눌러 <span style="color:#16a34a;font-weight:700;">서버 연결됨</span> 상태를 확인한 후 포트를 새로고침하여 업로드하세요.</p>
+                <p><strong>💡 팁:</strong> 브라우저(Chrome/Edge)에서 <strong>Web Serial API</strong>를 사용하면 코드가 업로드된 아두이노에서 직접 시리얼 데이터를 받아 레이더를 즉시 그릴 수 있습니다!</p>
+            </div>
+            <button id="btnGuideClose" class="btn btn-primary" type="button" style="width:100%;margin-top:12px;">닫기</button>
+        </div>
+    </div>
+
+    <!-- 로딩 오버레이 -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-card">
+            <div class="loading-spinner"></div>
+            <p id="loadingMessage">처리 중입니다...</p>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================
+        // 전역 상태 관리
+        // =========================================================
+        const state = {
+            apiBase: "https://127.0.0.1:18443",
+            serverConnected: false,
+            trigPin: 7,
+            echoPin: 8,
+            servoPin: 4,
+            minAngle: 10,
+            maxAngle: 170,
+            cycleMs: 4000,
+            rmax: 1.0, // 이미지 기본 1.0m (0.5m 선택 가능)
+            showOuterArc: true,
+            resetOnZero: true,
+            // 레이더 플롯 데이터 (파이썬 angle_dist_map 동일 구조: key = theta(rad), value = distance(m))
+            angleDistMap: new Map(),
+            currentTheta: null,
+            currentDistanceM: null,
+            currentAngleDeg: 0,
+            currentDistanceCm: 0,
+            // 시리얼/시뮬레이션 상태
+            serialPort: null,
+            serialReader: null,
+            isReadingSerial: false,
+            serverPollTimer: null,
+            simTimer: null,
+            simAngle: 10,
+            simDirection: 1
+        };
+
+        // 저장된 API_BASE 불러오기
+        try {
+            const savedApi = localStorage.getItem("lefthuk_api_base");
+            if (savedApi) {
+                state.apiBase = savedApi;
+            }
+        } catch (e) {
+            // 샌드박스 환경 무시
+        }
+
+        // =========================================================
+        // 유틸리티 및 로그 출력
+        // =========================================================
+        function addLog(message, type = "info") {
+            const logSection = document.getElementById("logSection");
+            const div = document.createElement("div");
+            div.className = `log-message log-${type}`;
+            const now = new Date().toLocaleTimeString();
+            div.textContent = `[${now}] ${message}`;
+            logSection.appendChild(div);
+            logSection.scrollTop = logSection.scrollHeight;
+        }
+
+        function showLoading(msg = "처리 중입니다...") {
+            document.getElementById("loadingMessage").textContent = msg;
+            document.getElementById("loadingOverlay").style.display = "flex";
+        }
+
+        function hideLoading() {
+            document.getElementById("loadingOverlay").style.display = "none";
+        }
+
+        // =========================================================
+        // 1. 아두이노 코드 자동 생성 (핀 번호 & 모터 각도 반영)
+        // =========================================================
+        function generateArduinoCode() {
+            const totalSteps = Math.max(1, (state.maxAngle - state.minAngle) * 2);
+            const stepDelayUs = Math.round((state.cycleMs * 1000) / totalSteps);
+
+            return `#include <Servo.h>
+
+#define SERVO_PIN ${state.servoPin}
+#define TRIG_PIN ${state.trigPin}
+#define ECHO_PIN ${state.echoPin}
+
+Servo scanner;
+
+// Sweep parameters
+const int MIN_ANGLE = ${state.minAngle};
+const int MAX_ANGLE = ${state.maxAngle};
+const unsigned long CYCLE_MS = ${state.cycleMs}UL;           // ${state.cycleMs}ms에 MIN→MAX→MIN 한 주기
+const int TOTAL_STEPS = (MAX_ANGLE - MIN_ANGLE) * 2;
+const unsigned long STEP_DELAY_US =
+    CYCLE_MS * 1000UL / TOTAL_STEPS;           // 약 ${stepDelayUs}µs
+
+void setup() {
+  Serial.begin(9600);           // initialize serial at 9600 baud
+  scanner.attach(SERVO_PIN);    // attach servo signal pin
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+}
+
+void loop() {
+  // sweep up: MIN_ANGLE -> MAX_ANGLE
+  for (int angle = MIN_ANGLE; angle <= MAX_ANGLE; angle++) {
+    measureAndSend(angle);
+    delayMicroseconds(STEP_DELAY_US);
+  }
+  // sweep down: MAX_ANGLE -> MIN_ANGLE
+  for (int angle = MAX_ANGLE; angle >= MIN_ANGLE; angle--) {
+    measureAndSend(angle);
+    delayMicroseconds(STEP_DELAY_US);
+  }
+}
+
+void measureAndSend(int angle) {
+  scanner.write(angle);    // move servo to 'angle'
+  delay(10);               // allow servo to settle (tweak as needed)
+
+  // trigger ultrasonic burst
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  // read echo pulse (timeout 20 ms)
+  unsigned long duration = pulseIn(ECHO_PIN, HIGH, 20000);
+  float distance;
+  if (duration == 0) {
+    distance = -1;         // no echo within timeout
+  } else {
+    distance = (duration * 0.0343) / 2.0;  // convert µs to cm
+  }
+
+  // send "angle,distance"
+  Serial.print(angle);
+  Serial.print(',');
+  Serial.println(distance);
+}`;
+        }
+
+        function updateUIFromState() {
+            // 핀 배지 및 셀렉트 동기화
+            document.getElementById("trigPinBadge").textContent = `D${state.trigPin} (${state.trigPin}번 핀)`;
+            document.getElementById("echoPinBadge").textContent = `D${state.echoPin} (${state.echoPin}번 핀)`;
+            document.getElementById("servoPinBadge").textContent = `D${state.servoPin} (${state.servoPin}번 핀)`;
+
+            document.getElementById("trigPinSelect").value = String(state.trigPin);
+            document.getElementById("echoPinSelect").value = String(state.echoPin);
+            document.getElementById("servoPinSelect").value = String(state.servoPin);
+
+            document.getElementById("modalTrigPin").value = String(state.trigPin);
+            document.getElementById("modalEchoPin").value = String(state.echoPin);
+            document.getElementById("modalServoPin").value = String(state.servoPin);
+
+            // 각도 UI 동기화
+            document.getElementById("minAngleSlider").value = String(state.minAngle);
+            document.getElementById("minAngleInput").value = String(state.minAngle);
+            document.getElementById("maxAngleSlider").value = String(state.maxAngle);
+            document.getElementById("maxAngleInput").value = String(state.maxAngle);
+            document.getElementById("cycleMsInput").value = String(state.cycleMs);
+
+            const totalSteps = Math.max(1, (state.maxAngle - state.minAngle) * 2);
+            const stepDelayUs = Math.round((state.cycleMs * 1000) / totalSteps);
+            document.getElementById("angleSummaryBadge").textContent =
+                `${state.minAngle}° ~ ${state.maxAngle}° (주기 ${(state.cycleMs / 1000).toFixed(1)}초)`;
+            document.getElementById("angleRangeText").textContent =
+                `최소 ${state.minAngle}° ↔ 최대 ${state.maxAngle}° (총 ${totalSteps} 스텝/주기)`;
+            document.getElementById("stepDelayPreview").textContent = `${stepDelayUs.toLocaleString()} µs`;
+
+            // 코드 프리뷰 업데이트
+            document.getElementById("codeContent").textContent = generateArduinoCode();
+        }
+
+        // =========================================================
+        // 2. 반원 극좌표 레이더 렌더링 (이미지 & 파이썬 코드 100% 재현)
+        // =========================================================
+        function drawRadar() {
+            const canvas = document.getElementById("radarCanvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+
+            const W = canvas.width;
+            const H = canvas.height;
+            ctx.clearRect(0, 0, W, H);
+
+            // 흰색 배경 (첨부 이미지 Figure 1 스타일)
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, W, H);
+
+            // 상단 타이틀: Remote Ultrasonic Radar System
+            ctx.fillStyle = "#111111";
+            ctx.font = "500 20px 'Pretendard', sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText("Remote Ultrasonic Radar System", W / 2, 42);
+
+            // 반원 중심점 및 반지름 설정
+            const cx = W / 2;
+            const cy = H - 52;
+            const maxR = Math.min(W * 0.41, H - 125);
+
+            // 1) 동심원 반원 그리드 (5단계: 0.2, 0.4, 0.6, 0.8, 1.0 비율)
+            const steps = 5;
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= steps; i++) {
+                const r = (maxR / steps) * i;
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, Math.PI, 0, false);
+                ctx.strokeStyle = i === steps ? "#222222" : "#b0b0b0";
+                ctx.lineWidth = i === steps ? 1.4 : 1.0;
+                ctx.stroke();
+            }
+
+            // 2) 방사형 각도 눈금선 및 라벨 (0°, 30°, 60°, 90°, 120°, 150°, 180°)
+            const angles = [0, 30, 60, 90, 120, 150, 180];
+            ctx.font = "500 14px sans-serif";
+            ctx.fillStyle = "#111111";
+
+            angles.forEach((deg) => {
+                const rad = (deg * Math.PI) / 180;
+                const xEnd = cx + maxR * Math.cos(rad);
+                const yEnd = cy - maxR * Math.sin(rad);
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(xEnd, yEnd);
+                ctx.strokeStyle = (deg === 0 || deg === 180) ? "#222222" : "#b0b0b0";
+                ctx.lineWidth = (deg === 0 || deg === 180) ? 1.4 : 1.0;
+                ctx.stroke();
+
+                // 각도 텍스트 위치
+                const labelR = maxR + 24;
+                const lx = cx + labelR * Math.cos(rad);
+                const ly = cy - labelR * Math.sin(rad) + 5;
+                ctx.textAlign = "center";
+                ctx.fillText(`${deg}°`, lx, ly);
+            });
+
+            // 3) 하단 거리 축 라벨 (0.0, 0.2, 0.4, 0.6, 0.8, 1.0 또는 rmax 기준)
+            ctx.font = "500 13.5px sans-serif";
+            ctx.fillStyle = "#111111";
+            ctx.textAlign = "center";
+            for (let i = 0; i <= steps; i++) {
+                const r = (maxR / steps) * i;
+                const val = ((state.rmax / steps) * i).toFixed(1);
+                ctx.fillText(val, cx + r, cy + 22);
+            }
+
+            // 4) 저장된 (theta, distance) 포인트 정렬 후 파란/시안 점선(dashed_line) & 점(points) 그리기
+            const sortedThetas = Array.from(state.angleDistMap.keys()).sort((a, b) => a - b);
+
+            if (sortedThetas.length > 0) {
+                // dashed_line: '--', color='cyan', linewidth=1.5
+                ctx.save();
+                ctx.beginPath();
+                ctx.setLineDash([5, 4]);
+                ctx.strokeStyle = "#48f0ff";
+                ctx.lineWidth = 1.6;
+
+                sortedThetas.forEach((theta, idx) => {
+                    const distM = state.angleDistMap.get(theta);
+                    const normR = Math.min(1, Math.max(0, distM / state.rmax)) * maxR;
+                    const px = cx + normR * Math.cos(theta);
+                    const py = cy - normR * Math.sin(theta);
+                    if (idx === 0) {
+                        ctx.moveTo(px, py);
+                    } else {
+                        ctx.lineTo(px, py);
+                    }
+                });
+                ctx.stroke();
+                ctx.restore();
+
+                // points: 'o', color='cyan', markersize=3.5
+                ctx.fillStyle = "#5cefff";
+                sortedThetas.forEach((theta) => {
+                    const distM = state.angleDistMap.get(theta);
+                    const normR = Math.min(1, Math.max(0, distM / state.rmax)) * maxR;
+                    const px = cx + normR * Math.cos(theta);
+                    const py = cy - normR * Math.sin(theta);
+                    ctx.beginPath();
+                    ctx.arc(px, py, 3.8, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            // 5) current_line: '-', color='green', linewidth=2.5 (현재 스캔 중인 녹색 레이더 바늘)
+            if (state.currentTheta !== null && state.currentDistanceM !== null) {
+                const normR = Math.min(1, Math.max(0, state.currentDistanceM / state.rmax)) * maxR;
+                const gx = cx + normR * Math.cos(state.currentTheta);
+                const gy = cy - normR * Math.sin(state.currentTheta);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(gx, gy);
+                ctx.strokeStyle = "#2b8a1e";
+                ctx.lineWidth = 2.6;
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        // =========================================================
+        // 3. 시리얼 데이터 파싱 및 레이더 업데이트 (파이썬 animate 함수 변환)
+        // =========================================================
+        function processRadarLine(rawLine) {
+            if (!rawLine) return;
+            const trimmed = rawLine.trim();
+            if (!trimmed || !trimmed.includes(",")) return;
+
+            const parts = trimmed.split(",");
+            if (parts.length < 2) return;
+
+            const angleDeg = parseFloat(parts[0]);
+            const distanceCm = parseFloat(parts[1]);
+
+            if (Number.isNaN(angleDeg) || Number.isNaN(distanceCm)) return;
+
+            // cm -> m 변환
+            let distanceM = distanceCm / 100.0;
+
+            // 초음파 타임아웃(-1) 또는 측정 범위 초과 처리
+            if (distanceCm < 0 || distanceM > state.rmax) {
+                if (state.showOuterArc) {
+                    // 이미지처럼 장애물이 없을 때 외곽 호(rmax * 0.96)에 표시
+                    distanceM = state.rmax * 0.96;
+                } else {
+                    return;
+                }
+            }
+
+            // sweep 주기마다 맵 리셋 (0° 또는 MIN_ANGLE 도달 시)
+            if (state.resetOnZero && (Math.round(angleDeg) === 0 || Math.round(angleDeg) === state.minAngle)) {
+                if (state.angleDistMap.size > 40) {
+                    state.angleDistMap.clear();
+                }
+            }
+
+            // 파이썬 코드 동일: theta = np.pi - np.deg2rad(angle_deg)
+            // 소수점 4자리 반올림으로 같은 각도 덮어쓰기 보장
+            const theta = Number((Math.PI - (angleDeg * Math.PI) / 180.0).toFixed(4));
+
+            state.angleDistMap.set(theta, distanceM);
+            state.currentTheta = theta;
+            state.currentDistanceM = distanceM;
+            state.currentAngleDeg = angleDeg;
+            state.currentDistanceCm = distanceCm;
+
+            // 하단 상태창 업데이트
+            document.getElementById("statCurrentAngle").textContent = `${Math.round(angleDeg)}°`;
+            document.getElementById("statCurrentCm").textContent =
+                distanceCm < 0 ? "감지 없음" : `${distanceCm.toFixed(1)} cm`;
+            document.getElementById("statCurrentM").textContent = `${distanceM.toFixed(2)} m`;
+            document.getElementById("statPointCount").textContent = `${state.angleDistMap.size} 개`;
+
+            drawRadar();
+        }
+
+        // =========================================================
+        // 4. 시뮬레이션 모드 (아두이노 미연결 시에도 이미지처럼 즉시 작동 확인)
+        // =========================================================
+        function startSimulation() {
+            stopSimulation();
+            state.simAngle = state.minAngle;
+            state.simDirection = 1;
+
+            const badge = document.getElementById("serialStatusBadge");
+            badge.className = "status status-simulating";
+            badge.textContent = "시뮬레이션 작동 중";
+            document.getElementById("btnToggleSim").textContent = "⏹️ 데모 시뮬레이션 정지";
+            document.getElementById("btnToggleSim").className = "btn btn-danger";
+
+            addLog("레이더 데모 시뮬레이션을 시작했습니다. (가상 장애물 스캔 중)", "info");
+
+            state.simTimer = setInterval(() => {
+                const a = state.simAngle;
+                // 첨부된 이미지(image_2ef519.png)와 유사한 물체 감지 패턴 생성
+                let simCm = state.rmax * 96; // 기본 외곽 호 (~96cm)
+                if (Math.abs(a - 148) <= 2) {
+                    simCm = 62.0 * state.rmax;
+                } else if (Math.abs(a - 92) <= 2) {
+                    simCm = 71.0 * state.rmax;
+                } else if (Math.abs(a - 56) <= 2) {
+                    simCm = 55.0 * state.rmax;
+                }
+
+                processRadarLine(`${a},${simCm.toFixed(1)}`);
+
+                state.simAngle += state.simDirection;
+                if (state.simAngle >= state.maxAngle) {
+                    state.simAngle = state.maxAngle;
+                    state.simDirection = -1;
+                } else if (state.simAngle <= state.minAngle) {
+                    state.simAngle = state.minAngle;
+                    state.simDirection = 1;
+                }
+            }, 30);
+        }
+
+        function stopSimulation() {
+            if (state.simTimer) {
+                clearInterval(state.simTimer);
+                state.simTimer = null;
+            }
+            const btn = document.getElementById("btnToggleSim");
+            btn.textContent = "▶️ 데모 시뮬레이션 시작";
+            btn.className = "btn btn-success";
+            if (!state.isReadingSerial && !state.serverPollTimer) {
+                const badge = document.getElementById("serialStatusBadge");
+                badge.className = "status status-disconnected";
+                badge.textContent = "데이터 대기 중";
+            }
+        }
+
+        // =========================================================
+        // 5. Web Serial API 연결 (브라우저 -> 아두이노 직접 수신)
+        // =========================================================
+        async function connectWebSerial() {
+            if (!("serial" in navigator)) {
+                addLog("현재 브라우저가 Web Serial API를 지원하지 않습니다. Chrome 또는 Edge 브라우저를 사용하거나 [로컬 서버에서 데이터 수신]을 이용해 주세요.", "warning");
+                return;
+            }
+
+            if (state.isReadingSerial) {
+                await disconnectWebSerial();
+                return;
+            }
+
+            try {
+                stopSimulation();
+                const port = await navigator.serial.requestPort();
+                await port.open({ baudRate: 9600 });
+                state.serialPort = port;
+                state.isReadingSerial = true;
+
+                const badge = document.getElementById("serialStatusBadge");
+                badge.className = "status status-connected";
+                badge.textContent = "시리얼 수신 중 (9600bps)";
+                document.getElementById("btnConnectWebSerial").textContent = "🔌 시리얼 연결 해제";
+                addLog("아두이노 Web Serial 포트가 연결되었습니다. 실시간 데이터를 수신합니다.", "success");
+
+                const textDecoder = new TextDecoderStream();
+                port.readable.pipeTo(textDecoder.writable);
+                const reader = textDecoder.readable.getReader();
+                state.serialReader = reader;
+
+                let buffer = "";
+                while (state.isReadingSerial) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    if (value) {
+                        buffer += value;
+                        const lines = buffer.split(/\r?\n/);
+                        buffer = lines.pop() || "";
+                        for (const line of lines) {
+                            processRadarLine(line);
+                        }
+                    }
+                }
+            } catch (err) {
+                addLog(`시리얼 연결 오류: ${err.message}`, "error");
+                await disconnectWebSerial();
+            }
+        }
+
+        async function disconnectWebSerial() {
+            state.isReadingSerial = false;
+            try {
+                if (state.serialReader) {
+                    await state.serialReader.cancel();
+                    state.serialReader = null;
+                }
+                if (state.serialPort) {
+                    await state.serialPort.close();
+                    state.serialPort = null;
+                }
+            } catch (e) {
+                // ignore close errors
+            }
+            document.getElementById("btnConnectWebSerial").textContent = "🔌 아두이노 시리얼 연결 (Web Serial)";
+            const badge = document.getElementById("serialStatusBadge");
+            badge.className = "status status-disconnected";
+            badge.textContent = "데이터 대기 중";
+            addLog("시리얼 연결이 해제되었습니다.", "info");
+        }
+
+        // =========================================================
+        // 6. 로컬 서버 API 연동 (상태 확인, 포트 조회, 코드 업로드, 시리얼 폴링)
+        // =========================================================
+        async function checkLocalServer() {
+            showLoading("로컬 서버 연결 상태를 확인하는 중...");
+            const endpoints = ["/health", "/api/health", "/status", "/api/status", "/ports", "/api/ports", "/"];
+            let connected = false;
+
+            for (const ep of endpoints) {
+                try {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), 2000);
+                    const res = await fetch(`${state.apiBase}${ep}`, {
+                        method: "GET",
+                        signal: controller.signal
+                    });
+                    clearTimeout(timer);
+                    if (res.ok) {
+                        connected = true;
+                        break;
+                    }
+                } catch (e) {
+                    // 다음 엔드포인트 시도
+                }
+            }
+
+            hideLoading();
+            const statusEl = document.getElementById("serverStatus");
+            state.serverConnected = connected;
+
+            if (connected) {
+                statusEl.className = "status status-connected";
+                statusEl.textContent = "서버 연결됨";
+                addLog(`로컬 서버(${state.apiBase}) 연결 성공!`, "success");
+                await refreshPorts();
+            } else {
+                statusEl.className = "status status-disconnected";
+                statusEl.textContent = "서버 미연결";
+                addLog(`로컬 서버(${state.apiBase})에 연결할 수 없습니다. 로컬 서버 실행 여부를 확인하거나 시뮬레이션/Web Serial 기능을 이용하세요.`, "warning");
+            }
+        }
+
+        async function autoDetectServer() {
+            showLoading("로컬 백엔드 서버 주소를 자동 감지하는 중...");
+            const candidates = [
+                "https://127.0.0.1:18443",
+                "http://127.0.0.1:8000",
+                "http://localhost:8000",
+                "https://localhost:18443",
+                "http://127.0.0.1:5000"
+            ];
+
+            for (const base of candidates) {
+                try {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), 1500);
+                    const res = await fetch(`${base}/health`, { signal: controller.signal }).catch(() =>
+                        fetch(`${base}/ports`, { signal: controller.signal })
+                    );
+                    clearTimeout(timer);
+                    if (res && res.ok) {
+                        state.apiBase = base;
+                        document.getElementById("apiBaseInput").value = base;
+                        document.getElementById("apiBaseNow").textContent = base;
+                        hideLoading();
+                        addLog(`로컬 서버 자동 감지 성공: ${base}`, "success");
+                        await checkLocalServer();
+                        return;
+                    }
+                } catch (e) {
+                    // continue
+                }
+            }
+
+            hideLoading();
+            addLog("실행 중인 로컬 서버를 찾지 못했습니다. 기본 주소(https://127.0.0.1:18443)를 유지합니다.", "warning");
+        }
+
+        async function refreshPorts() {
+            const select = document.getElementById("portSelect");
+            try {
+                const res = await fetch(`${state.apiBase}/ports`).catch(() =>
+                    fetch(`${state.apiBase}/api/ports`)
+                );
+                if (res && res.ok) {
+                    const data = await res.json();
+                    const ports = Array.isArray(data) ? data : (data.ports || []);
+                    select.innerHTML = `<option value="">포트를 선택하세요</option>`;
+                    ports.forEach((p) => {
+                        const portName = typeof p === "string" ? p : (p.port || p.device || p.path || "");
+                        const desc = typeof p === "object" && p.description ? ` (${p.description})` : "";
+                        if (portName) {
+                            const opt = document.createElement("option");
+                            opt.value = portName;
+                            opt.textContent = `${portName}${desc}`;
+                            select.appendChild(opt);
+                        }
+                    });
+                    if (ports.length > 0) {
+                        select.selectedIndex = 1;
+                    }
+                    addLog(`포트 목록 새로고침 완료 (${ports.length}개 발견)`, "success");
+                    return;
+                }
+            } catch (e) {
+                // fallback
+            }
+            addLog("로컬 서버에서 포트 목록을 가져오지 못해 기본 포트 옵션을 표시합니다.", "info");
+        }
+
+        async function uploadArduinoCode() {
+            const port = document.getElementById("portSelect").value;
+            const board = document.getElementById("boardSelect").value;
+            const code = generateArduinoCode();
+
+            if (!port) {
+                addLog("업로드할 아두이노 포트를 먼저 선택해 주세요!", "warning");
+                return;
+            }
+
+            const progressBar = document.getElementById("progressBar");
+            const progressFill = document.getElementById("progressFill");
+            progressBar.style.display = "block";
+            progressFill.style.width = "25%";
+            progressFill.textContent = "25% (컴파일 및 로컬 서버 전송 중...)";
+
+            showLoading("아두이노 레이더 코드를 업로드하고 있습니다...");
+            addLog(`보드(${board}), 포트(${port})로 초음파 레이더 코드 업로드를 시작합니다...`, "info");
+
+            let uploaded = false;
+            const uploadEndpoints = ["/upload", "/api/upload", "/compile-upload"];
+
+            for (const ep of uploadEndpoints) {
+                try {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), 15000);
+                    const res = await fetch(`${state.apiBase}${ep}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            board,
+                            fqbn: board,
+                            port,
+                            code,
+                            sketch: code
+                        }),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timer);
+                    if (res.ok) {
+                        uploaded = true;
+                        break;
+                    }
+                } catch (e) {
+                    // try next endpoint
+                }
+            }
+
+            setTimeout(() => {
+                progressFill.style.width = "100%";
+                progressFill.textContent = uploaded ? "100% (업로드 완료!)" : "100% (코드 생성 완료)";
+                hideLoading();
+
+                if (uploaded) {
+                    addLog("✅ 아두이노 레이더 코드 업로드가 완료되었습니다! 이제 [3️⃣ 실시간 초음파 레이더] 탭에서 측정을 시작하세요.", "success");
+                } else {
+                    addLog("로컬 업로더 서버 응답이 없어 업로드 시뮬레이션 및 아두이노 코드 생성을 완료했습니다. (로컬 서버 연결 시 즉시 업로드됩니다)", "warning");
+                }
+            }, 600);
+        }
+
+        function toggleServerSerialStream() {
+            if (state.serverPollTimer) {
+                clearInterval(state.serverPollTimer);
+                state.serverPollTimer = null;
+                document.getElementById("btnConnectServerSerial").textContent = "🖥️ 로컬 서버에서 데이터 수신";
+                const badge = document.getElementById("serialStatusBadge");
+                badge.className = "status status-disconnected";
+                badge.textContent = "데이터 대기 중";
+                addLog("로컬 서버 시리얼 수신을 중지했습니다.", "info");
+                return;
+            }
+
+            stopSimulation();
+            const port = document.getElementById("portSelect").value || "COM3";
+            const badge = document.getElementById("serialStatusBadge");
+            badge.className = "status status-connected";
+            badge.textContent = "로컬 서버 수신 대기 중";
+            document.getElementById("btnConnectServerSerial").textContent = "⏹️ 로컬 서버 수신 중지";
+            addLog(`로컬 서버(${state.apiBase})로부터 포트(${port}) 시리얼 데이터를 수신합니다.`, "info");
+
+            state.serverPollTimer = setInterval(async () => {
+                try {
+                    const res = await fetch(`${state.apiBase}/serial?port=${encodeURIComponent(port)}`).catch(() =>
+                        fetch(`${state.apiBase}/api/serial?port=${encodeURIComponent(port)}`)
+                    );
+                    if (res && res.ok) {
+                        const data = await res.json();
+                        const lines = Array.isArray(data.lines)
+                            ? data.lines
+                            : (typeof data.data === "string" ? data.data.split(/\r?\n/) : []);
+                        lines.forEach((line) => processRadarLine(line));
+                    }
+                } catch (e) {
+                    // ignore polling error
+                }
+            }, 60);
+        }
+
+        // =========================================================
+        // 7. 탭 전환 및 이벤트 바인딩
+        // =========================================================
+        function switchTab(tabName) {
+            document.querySelectorAll(".main-tab-btn").forEach((btn) => {
+                btn.classList.toggle("active", btn.dataset.tab === tabName);
+            });
+
+            const secSetup = document.getElementById("sectionSetup");
+            const secAngle = document.getElementById("sectionAngle");
+            const secUpload = document.getElementById("sectionUploadCard");
+            const secRadar = document.getElementById("sectionRadar");
+
+            if (tabName === "setup") {
+                secSetup.style.display = "block";
+                secAngle.style.display = "none";
+                secUpload.style.display = "block";
+                secRadar.style.display = "none";
+            } else if (tabName === "angle") {
+                secSetup.style.display = "none";
+                secAngle.style.display = "block";
+                secUpload.style.display = "block";
+                secRadar.style.display = "none";
+            } else if (tabName === "radar") {
+                secSetup.style.display = "none";
+                secAngle.style.display = "none";
+                secUpload.style.display = "none";
+                secRadar.style.display = "block";
+                drawRadar();
+            } else {
+                // all
+                secSetup.style.display = "block";
+                secAngle.style.display = "block";
+                secUpload.style.display = "block";
+                secRadar.style.display = "block";
+                drawRadar();
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("apiBaseInput").value = state.apiBase;
+            document.getElementById("apiBaseNow").textContent = state.apiBase;
+            updateUIFromState();
+
+            // 초기 데모 포인트 세팅 (첨부 이미지와 동일한 초기 프리뷰 제공)
+            for (let deg = 10; deg <= 125; deg++) {
+                let dCm = 96.0;
+                if (Math.abs(deg - 34) <= 1) dCm = 62.0;
+                if (Math.abs(deg - 88) <= 1) dCm = 70.0;
+                if (Math.abs(deg - 114) <= 1) dCm = 55.0;
+                processRadarLine(`${deg},${dCm}`);
+            }
+
+            // 탭 버튼 클릭
+            document.querySelectorAll(".main-tab-btn").forEach((btn) => {
+                btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+            });
+
+            // 초기 진입 핀 설정 모달 적용 버튼
+            document.getElementById("btnApplyModalPins").addEventListener("click", () => {
+                const trig = parseInt(document.getElementById("modalTrigPin").value, 10);
+                const echo = parseInt(document.getElementById("modalEchoPin").value, 10);
+                const servo = parseInt(document.getElementById("modalServoPin").value, 10);
+
+                if (!Number.isNaN(trig)) state.trigPin = Math.min(13, Math.max(2, trig));
+                if (!Number.isNaN(echo)) state.echoPin = Math.min(13, Math.max(2, echo));
+                if (!Number.isNaN(servo)) state.servoPin = Math.min(13, Math.max(2, servo));
+
+                updateUIFromState();
+                document.getElementById("pinWizardModal").style.display = "none";
+                addLog(`핀 설정 완료: TRIG=D${state.trigPin}, ECHO=D${state.echoPin}, SERVO=D${state.servoPin}`, "success");
+            });
+
+            // 핀 입력 모달 다시 열기 버튼들
+            const openPinModal = () => {
+                document.getElementById("pinWizardModal").style.display = "flex";
+            };
+            document.getElementById("btnOpenPinWizard").addEventListener("click", openPinModal);
+            document.getElementById("btnPromptPinsModal").addEventListener("click", openPinModal);
+            document.getElementById("btnFocusTrig").addEventListener("click", openPinModal);
+            document.getElementById("btnFocusEcho").addEventListener("click", openPinModal);
+            document.getElementById("btnFocusServo").addEventListener("click", openPinModal);
+
+            // 카드 내 핀 드롭다운 변경
+            document.getElementById("trigPinSelect").addEventListener("change", (e) => {
+                state.trigPin = parseInt(e.target.value, 10);
+                updateUIFromState();
+                addLog(`초음파 TRIG 핀이 D${state.trigPin}번으로 변경되었습니다.`, "info");
+            });
+            document.getElementById("echoPinSelect").addEventListener("change", (e) => {
+                state.echoPin = parseInt(e.target.value, 10);
+                updateUIFromState();
+                addLog(`초음파 ECHO 핀이 D${state.echoPin}번으로 변경되었습니다.`, "info");
+            });
+            document.getElementById("servoPinSelect").addEventListener("change", (e) => {
+                state.servoPin = parseInt(e.target.value, 10);
+                updateUIFromState();
+                addLog(`서보 모터(SERVO) 핀이 D${state.servoPin}번으로 변경되었습니다.`, "info");
+            });
+
+            // 모터 각도 슬라이더 & 입력창 연동
+            function updateAngles(minVal, maxVal) {
+                let mn = Math.max(0, Math.min(175, parseInt(minVal, 10) || 0));
+                let mx = Math.max(5, Math.min(180, parseInt(maxVal, 10) || 180));
+                if (mn >= mx) {
+                    mx = Math.min(180, mn + 10);
+                }
+                state.minAngle = mn;
+                state.maxAngle = mx;
+                updateUIFromState();
+            }
+
+            document.getElementById("minAngleSlider").addEventListener("input", (e) => {
+                updateAngles(e.target.value, state.maxAngle);
+            });
+            document.getElementById("minAngleInput").addEventListener("change", (e) => {
+                updateAngles(e.target.value, state.maxAngle);
+            });
+            document.getElementById("maxAngleSlider").addEventListener("input", (e) => {
+                updateAngles(state.minAngle, e.target.value);
+            });
+            document.getElementById("maxAngleInput").addEventListener("change", (e) => {
+                updateAngles(state.minAngle, e.target.value);
+            });
+            document.getElementById("cycleMsInput").addEventListener("change", (e) => {
+                state.cycleMs = Math.max(500, parseInt(e.target.value, 10) || 4000);
+                updateUIFromState();
+            });
+
+            // 각도 프리셋 칩
+            document.querySelectorAll(".preset-chip").forEach((chip) => {
+                chip.addEventListener("click", () => {
+                    document.querySelectorAll(".preset-chip").forEach((c) => c.classList.remove("active"));
+                    chip.classList.add("active");
+                    updateAngles(chip.dataset.min, chip.dataset.max);
+                    addLog(`모터 작동 각도 프리셋 적용: ${state.minAngle}° ~ ${state.maxAngle}°`, "info");
+                });
+            });
+
+            // 서버 연결 카드 토글 (#ServerConnect)
+            document.getElementById("ServerConnect").addEventListener("click", () => {
+                const card = document.getElementById("apiBaseCard");
+                const isHidden = card.style.display === "none";
+                card.style.display = isHidden ? "block" : "none";
+            });
+
+            document.getElementById("btnSaveApiBase").addEventListener("click", () => {
+                const val = document.getElementById("apiBaseInput").value.trim().replace(/\/+$/, "");
+                if (val) {
+                    state.apiBase = val;
+                    document.getElementById("apiBaseNow").textContent = val;
+                    try {
+                        localStorage.setItem("lefthuk_api_base", val);
+                    } catch (e) {}
+                    addLog(`API_BASE 주소가 ${val}로 저장되었습니다.`, "success");
+                }
+            });
+
+            document.getElementById("btnAutoDetect").addEventListener("click", autoDetectServer);
+            document.getElementById("btnCheckServer").addEventListener("click", checkLocalServer);
+            document.getElementById("btnRefreshPorts").addEventListener("click", refreshPorts);
+            document.getElementById("btnUploadRadarCode").addEventListener("click", uploadArduinoCode);
+
+            document.getElementById("btnGoToRadarTab").addEventListener("click", () => {
+                switchTab("radar");
+            });
+
+            // 코드 보기/숨기기 및 복사
+            document.getElementById("btnToggleCode").addEventListener("click", () => {
+                const preview = document.getElementById("codePreview");
+                preview.style.display = preview.style.display === "none" ? "block" : "none";
+            });
+
+            document.getElementById("btnCopyCode").addEventListener("click", () => {
+                const code = generateArduinoCode();
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(code).then(() => {
+                        addLog("아두이노 코드가 클립보드에 복사되었습니다.", "success");
+                    }).catch(() => fallbackCopy(code));
+                } else {
+                    fallbackCopy(code);
+                }
+            });
+
+            function fallbackCopy(text) {
+                const ta = document.createElement("textarea");
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand("copy");
+                document.body.removeChild(ta);
+                addLog("아두이노 코드가 클립보드에 복사되었습니다.", "success");
+            }
+
+            // 레이더 제어 버튼
+            document.getElementById("btnConnectWebSerial").addEventListener("click", connectWebSerial);
+            document.getElementById("btnConnectServerSerial").addEventListener("click", toggleServerSerialStream);
+            document.getElementById("btnToggleSim").addEventListener("click", () => {
+                if (state.simTimer) {
+                    stopSimulation();
+                    addLog("데모 시뮬레이션을 정지했습니다.", "info");
+                } else {
+                    startSimulation();
+                }
+            });
+
+            document.getElementById("btnClearRadar").addEventListener("click", () => {
+                state.angleDistMap.clear();
+                state.currentTheta = null;
+                state.currentDistanceM = null;
+                document.getElementById("statPointCount").textContent = "0 개";
+                drawRadar();
+                addLog("레이더 맵 데이터를 초기화했습니다.", "info");
+            });
+
+            document.getElementById("rmaxSelect").addEventListener("change", (e) => {
+                state.rmax = parseFloat(e.target.value) || 1.0;
+                drawRadar();
+            });
+
+            document.getElementById("chkShowOuterArc").addEventListener("change", (e) => {
+                state.showOuterArc = e.target.checked;
+            });
+
+            document.getElementById("chkResetOnZero").addEventListener("change", (e) => {
+                state.resetOnZero = e.target.checked;
+            });
+
+            // 수동 패킷 전송
+            document.getElementById("btnSendManualPacket").addEventListener("click", () => {
+                const val = document.getElementById("manualPacketInput").value;
+                processRadarLine(val);
+                addLog(`수동 데이터 입력 처리됨: ${val}`, "info");
+            });
+
+            document.getElementById("btnClearLog").addEventListener("click", () => {
+                document.getElementById("logSection").innerHTML = "";
+            });
+
+            // 모달 열기/닫기 (사용법, 개발자, 서버 가이드)
+            const helpModal = document.getElementById("helpModal");
+            const devModal = document.getElementById("devModal");
+            const guideModal = document.getElementById("serverGuideModal");
+
+            document.getElementById("btnHelp").addEventListener("click", () => {
+                helpModal.style.display = "flex";
+            });
+            document.getElementById("hukCharImg").addEventListener("click", () => {
+                helpModal.style.display = "flex";
+            });
+            document.getElementById("btnHelpClose").addEventListener("click", () => {
+                helpModal.style.display = "none";
+            });
+
+            document.getElementById("btnDev").addEventListener("click", () => {
+                devModal.style.display = "flex";
+            });
+            document.getElementById("btnDevClose").addEventListener("click", () => {
+                devModal.style.display = "none";
+            });
+
+            document.getElementById("btnServerGuide").addEventListener("click", () => {
+                guideModal.style.display = "flex";
+            });
+            document.getElementById("btnGuideClose").addEventListener("click", () => {
+                guideModal.style.display = "none";
+            });
+
+            // 모달 배경 클릭 시 닫기
+            [helpModal, devModal, guideModal].forEach((m) => {
+                m.addEventListener("click", (e) => {
+                    if (e.target === m) m.style.display = "none";
+                });
+            });
+
+            // 다국어 전환 (KO / EN)
+            document.getElementById("langSelect").addEventListener("change", (e) => {
+                const isEn = e.target.value === "en";
+                document.getElementById("titleMain").textContent = isEn
+                    ? "Huk.T's Data Science"
+                    : "Huk.T의 데이터 사이언스";
+                document.getElementById("subtitleMain").textContent = isEn
+                    ? "📡 Left HUK - Arduino Ultrasonic Radar & Uploader"
+                    : "📡 Left HUK - 아두이노 초음파 레이더 시스템 & 코드 업로더";
+                document.getElementById("btnHelp").textContent = isEn ? "Guide" : "사용법";
+            });
+        });
+    </script>
+</body>
+</html>

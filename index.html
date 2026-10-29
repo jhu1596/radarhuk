@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>(LEFTHUK)Huk.T의 데이터 사이언스 - 초음파 레이더 시스템</title>
+    <title>초음파 레이더 시스템</title>
 
     <style>
         * {
@@ -20,79 +20,33 @@
         }
 
         .container {
-            max-width: 980px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
         .header {
             text-align: center;
             color: #fff;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
             padding-top: 10px;
         }
 
         .header h1 {
-            font-size: 2.4em;
-            margin: 0 0 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,.22);
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: .92;
+            font-size: 2.5em;
             margin: 0;
-        }
-
-        /* 상단 메인 워크플로 탭 */
-        .main-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-        }
-
-        .main-tab-btn {
-            flex: 1;
-            min-width: 150px;
-            padding: 13px 16px;
-            border: 2px solid rgba(255,255,255,0.65);
-            border-radius: 12px;
-            background: rgba(255,255,255,0.18);
-            color: #fff;
-            font-size: 0.98em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .2s ease;
-            backdrop-filter: blur(8px);
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .main-tab-btn:hover {
-            transform: translateY(-2px);
-            background: rgba(255,255,255,0.28);
-        }
-
-        .main-tab-btn.active {
-            background: #fff;
-            color: #5b4bd6;
-            border-color: #fff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 4px rgba(0,0,0,.2);
         }
 
         .card {
             background: #fff;
             border-radius: 16px;
-            padding: 28px;
+            padding: 30px;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,.2);
         }
 
         .card h2 {
-            font-size: 1.45em;
+            font-size: 1.5em;
             margin: 0 0 20px;
             color: #333;
             border-bottom: 3px solid #667eea;
@@ -106,20 +60,19 @@
 
         .connection-section {
             display: flex;
-            gap: 12px;
+            gap: 15px;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 16px;
         }
 
         .btn {
-            padding: 11px 22px;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            font-size: 0.96em;
+            font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            transition: all .25s ease;
+            transition: all .3s ease;
             font-family: inherit;
             display: inline-flex;
             align-items: center;
@@ -178,8 +131,8 @@
             align-items: center;
             padding: 8px 16px;
             border-radius: 20px;
-            font-size: .92em;
-            font-weight: 700;
+            font-size: .95em;
+            font-weight: 600;
         }
 
         .status-disconnected {
@@ -189,7 +142,7 @@
 
         .status-connected {
             background: #d4f8e8;
-            color: #16a34a;
+            color: #26de81;
         }
 
         .status-simulating {
@@ -209,8 +162,7 @@
         .settings-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 18px;
-            margin-bottom: 20px;
+            gap: 20px;
         }
 
         .form-group {
@@ -222,15 +174,17 @@
             font-weight: 600;
             margin-bottom: 8px;
             color: #555;
-            font-size: .93em;
+            font-size: .95em;
         }
 
-        .form-group input, .form-group select {
-            padding: 10px 12px;
+        .form-group input[type="number"],
+        .form-group input[type="text"],
+        .form-group select {
+            padding: 10px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 1em;
-            transition: border-color .25s ease;
+            transition: border-color .3s ease;
             font-family: inherit;
         }
 
@@ -239,142 +193,42 @@
             border-color: #667eea;
         }
 
-        /* 핀 설정 버튼 카드 */
-        .pin-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 16px;
-            margin-top: 12px;
-        }
-
-        .pin-card {
-            border: 2px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 18px;
-            background: #fafbff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 10px;
-            transition: all .25s ease;
-        }
-
-        .pin-card:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(102,126,234,0.15);
-        }
-
-        .pin-card.configured {
-            border-color: #26de81;
-            background: #f0fdf4;
-        }
-
-        .pin-icon {
-            font-size: 2.2em;
-        }
-
-        .pin-title {
-            font-weight: 700;
-            font-size: 1.05em;
-            color: #222;
-        }
-
-        .pin-badge {
-            display: inline-block;
-            padding: 5px 14px;
-            border-radius: 999px;
-            background: #667eea;
-            color: #fff;
-            font-weight: 800;
-            font-size: 0.95em;
-        }
-
-        .pin-quick-row {
-            display: flex;
-            gap: 8px;
+        .form-group input[type="range"] {
             width: 100%;
-            align-items: center;
-            justify-content: center;
-            margin-top: 4px;
+            height: 8px;
+            accent-color: #667eea;
+            cursor: pointer;
+            margin-top: 10px;
         }
 
-        .pin-quick-row select {
-            padding: 7px 10px;
-            border-radius: 8px;
-            border: 2px solid #cbd5e1;
-            font-weight: 600;
-            font-family: inherit;
-        }
-
-        /* 각도 조절 탭 내부 스타일 */
+        /* 각도 조절 박스 스타일 */
         .angle-control-box {
             background: #f8faff;
             border: 2px solid #e2e8f0;
             border-radius: 14px;
             padding: 20px;
-            margin-bottom: 18px;
-        }
-
-        .angle-range-visual {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-bottom: 14px;
         }
 
         .angle-Readout {
-            font-size: 1.25em;
+            font-size: 0.9em;
             font-weight: 800;
             color: #4b3bbd;
             background: #eef1ff;
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 10px;
         }
 
-        .preset-chips {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .preset-chip {
-            padding: 7px 14px;
-            border-radius: 999px;
-            border: 1.5px solid #cbd5e1;
-            background: #fff;
-            font-size: 0.88em;
-            font-weight: 700;
-            color: #444;
-            cursor: pointer;
-            transition: all .2s;
-        }
-
-        .preset-chip:hover, .preset-chip.active {
-            border-color: #667eea;
-            background: #667eea;
-            color: #fff;
-        }
-
-        /* 레이더 캔버스 컨테이너 (이미지 스타일 재현) */
+        /* 레이더 캔버스 컨테이너 */
         .radar-wrapper {
             background: #ffffff;
             border: 2px solid #e2e8f0;
             border-radius: 14px;
             padding: 18px;
+            margin-top: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.03);
-        }
-
-        .radar-wrapper.dark-theme {
-            background: #0f172a;
-            border-color: #1e293b;
         }
 
         #radarCanvas {
@@ -472,20 +326,6 @@
             color: #856404;
         }
 
-        .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 14px 16px;
-            border-radius: 8px;
-            margin-bottom: 18px;
-        }
-
-        .info-box p {
-            margin: 5px 0;
-            color: #1565c0;
-            font-size: .9em;
-        }
-
         .progress-bar {
             width: 100%;
             height: 28px;
@@ -518,8 +358,8 @@
             flex-wrap: wrap;
         }
 
-        .btn-ServerConnect, .btn-dev-outside {
-            padding: 9px 15px;
+        .btn-ServerConnect {
+            padding: 10px 14px;
             font-size: 13px;
             border-radius: 18px;
         }
@@ -602,81 +442,6 @@
             background: #ffffff;
         }
 
-        /* 업로더/데이터 고정 네비 */
-        .site-switch {
-            display: flex;
-            flex-direction: column;
-            width: 92px;
-            position: fixed;
-            top: 52px;
-            right: 14px;
-            z-index: 6000;
-            gap: 7px;
-            align-items: stretch;
-            padding: 7px 8px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.18);
-            border: 1px solid rgba(255,255,255,0.45);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 10px 25px rgba(0,0,0,.18);
-        }
-
-        .switch-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 64px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 800;
-            text-decoration: none;
-            border: 1px solid rgba(255,255,255,0.55);
-            transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-            cursor: pointer;
-        }
-
-        .switch-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(0,0,0,.18);
-        }
-
-        .switch-btn.is-active {
-            background: #fff;
-            color: #5b4bd6;
-            border-color: #fff;
-        }
-
-        .switch-btn.is-inactive {
-            background: rgba(0,0,0,0.12);
-            color: #fff;
-            border-color: rgba(255,255,255,0.55);
-        }
-
-        /* 언어 선택 드롭다운 (우상단) */
-        .lang-picker {
-            position: fixed;
-            top: 10px;
-            right: 14px;
-            z-index: 6500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .lang-picker select {
-            width: 140px;
-            padding: 7px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.55);
-            background: rgba(255,255,255,0.92);
-            font-weight: 800;
-            font-size: 11px;
-            outline: none;
-            box-shadow: 0 10px 25px rgba(0,0,0,.12);
-        }
-
         /* 로딩 오버레이 UI */
         .loading-overlay {
             position: fixed;
@@ -736,13 +501,17 @@
 
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 1.75em;
+                font-size: 1.8em;
             }
             .card {
-                padding: 18px;
+                padding: 20px;
             }
-            .site-switch {
-                display: none;
+            .connection-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn {
+                width: 100%;
             }
         }
     </style>
@@ -750,355 +519,173 @@
 
 <body>
     <div class="container">
+        <!-- 1. 페이지 상단 제목 -->
         <div class="header">
-            <h1 id="titleMain">Huk.T의 데이터 사이언스</h1>
-            <p id="subtitleMain">📡 Left HUK - 아두이노 초음파 레이더 시스템 &amp; 코드 업로더</p>
+            <h1 id="titleMain">초음파 레이더 시스템</h1>
         </div>
 
-        <!-- 우측 상단: 언어 설정 -->
-        <div class="lang-picker">
-            <span aria-hidden="true">🌐</span>
-            <select id="langSelect" aria-label="Language">
-                <option value="ko">한국어 (KO)</option>
-                <option value="en">English (EN)</option>
-            </select>
-        </div>
-
-        <!-- 오른쪽 상단: 사이트 이동 -->
-        <div class="site-nav-topright">
-            <nav class="site-switch" aria-label="사이트 이동">
-                <a class="switch-btn is-active" href="https://joo.is/lefthuk" target="_blank" rel="noopener">업로더</a>
-                <a class="switch-btn is-inactive" href="https://joo.is/righthuk" target="_blank" rel="noopener">데이터</a>
-                <a class="switch-btn is-inactive" href="https://joo.is/reporthuk" target="_blank" rel="noopener">보고서</a>
-                <a class="switch-btn is-inactive" href="https://joo.is/dashboardhuk" target="_blank" rel="noopener">대시보드</a>
-                <a class="switch-btn is-inactive" href="https://jhu1596.github.io/extendhuk/" target="_blank" rel="noopener">확장</a>
-                <a class="switch-btn is-inactive" href="https://joo.is/sharehuk" target="_blank" rel="noopener">커뮤니티</a>
-            </nav>
-        </div>
-
-        <!-- 로컬 업로더 상태 카드 밖 오른쪽 끝: 서버 연결 / 초기 핀 설정 / 개발자 버튼 -->
+        <!-- 4. 상단 액션 바: 핀 번호 설정 & 서버 연결 -->
         <div class="card-actions">
-            <button id="btnOpenPinWizard" class="btn btn-primary btn-ServerConnect" type="button">📌 핀 번호 다시 입력</button>
-            <button id="btnToggleApiBase" class="btn btn-primary btn-ServerConnect" type="button">⚙️ API 주소 설정</button>
-            <button id="ServerConnect" class="btn btn-primary btn-ServerConnect" type="button">🖥️ 서버 주소 설정</button>
-            <button id="btnDev" class="btn btn-primary btn-dev-outside" type="button">👨‍🏫 개발자</button>
+            <button id="btnOpenPinWizard" class="btn btn-primary btn-ServerConnect" type="button">핀 번호 설정</button>
+            <button id="ServerConnect" class="btn btn-primary btn-ServerConnect" type="button">서버 연결</button>
         </div>
 
-        <!-- 상단 탭 네비게이션 (1. 핀 및 서버 설정 / 2. 모터 각도 조절 탭 / 3. 실시간 레이더 화면) -->
-        <div class="main-tabs" role="tablist">
-            <button id="tabBtnSetup" class="main-tab-btn active" type="button" data-tab="setup">
-                <span>1️⃣ 핀 설정 &amp; 코드 업로드</span>
-            </button>
-            <button id="tabBtnAngle" class="main-tab-btn" type="button" data-tab="angle">
-                <span>2️⃣ 모터 작동 각도 조절 탭</span>
-            </button>
-            <button id="tabBtnRadar" class="main-tab-btn" type="button" data-tab="radar">
-                <span>3️⃣ 실시간 초음파 레이더</span>
-            </button>
-            <button id="tabBtnAll" class="main-tab-btn" type="button" data-tab="all">
-                <span>📋 한눈에 모두 보기</span>
-            </button>
-        </div>
-
-        <!-- 숨김/토글 가능한 API_BASE 설정 카드 -->
-        <div class="card" id="apiBaseCard" style="display: none;">
-            <h2>🖥️ 로컬 백엔드 주소(API_BASE)</h2>
-            <div class="info-box">
-                <p>✅ HTTPS 권장: <code>https://127.0.0.1:18443</code> (setup 실행 후)</p>
-                <p>✅ HTTP(로컬 실행용): <code>http://127.0.0.1:8000</code></p>
-                <p>⚠️ <strong>중요 (CORS 안내):</strong> <code>backend-uploader.exe</code>는 허용된 주소(<code>https://lefthuk.netlify.app</code>, <code>https://joo.is</code>, <code>http://127.0.0.1:8000</code>, <code>https://127.0.0.1:18443</code> 등)에서 열린 페이지만 연결을 허용합니다. 이 HTML 파일을 로컬 서버 폴더 내 <code>public/radar.html</code>에 넣고 <code>https://127.0.0.1:18443/radar.html</code>로 접속하거나 <code>server.js</code>의 <code>ALLOWED_ORIGINS</code>에 현재 도메인을 추가하세요.</p>
+        <!-- 7. 업로더 상태 / 보드 선택 / 아두이노 포트 (3개 카드로 분리) -->
+        <div class="card">
+            <h2 style="display: flex; justify-content: space-between; align-items: center;">
+                <span>🖥️ 업로더 상태</span>
+                <button id="btnServerGuide" class="btn btn-primary" type="button" style="padding: 6px 12px; font-size: 14px; border-radius: 8px;">서버 연결 방법</button>
+            </h2>
+            <div class="connection-section">
+                <button id="btnCheckServer" class="btn btn-primary" type="button">서버 상태 확인</button>
+                <span id="serverStatus" class="status status-disconnected">서버 미연결</span>
             </div>
+        </div>
+
+        <div class="card" id="boardCard">
+            <h2>🧩 보드 선택</h2>
+            <div class="form-group">
+                <label for="boardSelect">보드 타입</label>
+                <select id="boardSelect">
+                    <option value="arduino:avr:uno">Arduino UNO</option>
+                    <option value="arduino:avr:nano">Arduino Nano</option>
+                    <option value="arduino:avr:mega">Arduino Mega</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card" id="arduinoPortCard">
+            <h2>📡 아두이노 포트</h2>
+            <div class="connection-section">
+                <button id="btnRefreshPorts" class="btn btn-primary" type="button">포트 목록 새로고침</button>
+                <div class="form-group" style="flex:1;margin:0;">
+                    <select id="portSelect" style="width:100%;">
+                        <option value="">포트를 선택하세요</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8~12. 모터 작동 각도 및 주기(초) 조절 -->
+        <div class="card">
+            <h2>
+                <span>📐 모터 작동 각도 및 주기 조절</span>
+                <span class="angle-Readout" id="angleSummaryBadge">10° ~ 170° (주기 4초)</span>
+            </h2>
+
+            <div class="angle-control-box">
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="minAngleSlider">최소 각도 (<span id="minAngleValText">10</span>°)</label>
+                        <input type="range" id="minAngleSlider" min="0" max="170" value="10" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxAngleSlider">최대 각도 (<span id="maxAngleValText">170</span>°)</label>
+                        <input type="range" id="maxAngleSlider" min="10" max="180" value="170" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cycleSecInput">주기(초)</label>
+                        <input type="number" id="cycleSecInput" min="0.5" max="20" step="0.5" value="4" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 아두이노 레이더 코드 생성 및 업로드 -->
+        <div class="card">
+            <h2>
+                <span>🚀 아두이노 레이더 코드 업로드</span>
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <label style="font-size:13px; font-weight:600; color:#4b3bbd; display:inline-flex; align-items:center; gap:5px; cursor:pointer; background:#eef1ff; padding:5px 10px; border-radius:8px;">
+                        <input type="checkbox" id="chkNoServoLib" />
+                        Servo.h 미설치 환경 호환 모드(내장 PWM)
+                    </label>
+                    <button id="btnToggleCode" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">코드 보기/숨기기</button>
+                    <button id="btnCopyCode" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">📋 코드 복사</button>
+                </div>
+            </h2>
 
             <div class="connection-section">
-                <div class="form-group" style="flex:1;margin:0;">
-                    <label for="apiBaseInput">로컬 서버 주소(API_BASE)</label>
-                    <input id="apiBaseInput" type="text" value="https://127.0.0.1:18443" />
-                </div>
-                <button id="btnSaveApiBase" class="btn btn-primary" type="button">저장</button>
-                <button id="btnAutoDetect" class="btn btn-primary" type="button">자동 감지</button>
-                <button id="btnDownloadServerExe" class="btn btn-outline" type="button">📥 로컬 서버(exe) 다운로드</button>
+                <button id="btnUploadRadarCode" class="btn btn-primary" type="button" style="padding: 14px 28px; font-size: 1.05em;">
+                    ⚡ 아두이노 레이더 코드 업로드
+                </button>
+                <span id="currentPinInfoText" style="font-size: 0.92em; font-weight: 700; color: #555;">
+                    현재 핀 설정: TRIG=D7, ECHO=D8, 모터=D4
+                </span>
             </div>
 
-            <div style="margin-top:10px;color:#555;font-size:.9em;">
-                현재 API_BASE: <code id="apiBaseNow">https://127.0.0.1:18443</code>
-            </div>
-        </div>
-
-        <!-- [섹션 A] 로컬 서버 & 포트 연결 + 핀 설정 -->
-        <div id="sectionSetup">
-            <div class="card">
-                <h2>
-                    <span>🖥️ 로컬 서버 &amp; 아두이노 연결 상태</span>
-                    <button id="btnServerGuide" class="btn btn-primary" type="button" style="padding: 6px 12px; font-size: 13px; border-radius: 8px;">서버 연결 방법</button>
-                </h2>
-                <div class="connection-section">
-                    <button id="btnCheckServer" class="btn btn-primary" type="button">서버 상태 확인</button>
-                    <span id="serverStatus" class="status status-disconnected">서버 미연결</span>
-
-                    <div class="form-group" style="min-width: 170px; margin: 0;">
-                        <select id="boardSelect" aria-label="보드 타입">
-                            <option value="arduino:avr:uno">Arduino UNO</option>
-                            <option value="arduino:avr:nano">Arduino Nano</option>
-                            <option value="arduino:avr:mega">Arduino Mega</option>
-                        </select>
-                    </div>
-
-                    <button id="btnRefreshPorts" class="btn btn-outline" type="button">포트 목록 새로고침</button>
-                    <div class="form-group" style="flex:1; min-width: 180px; margin:0;">
-                        <select id="portSelect" aria-label="아두이노 포트 선택">
-                            <option value="">포트를 선택하세요</option>
-                        </select>
-                    </div>
-                </div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill">0%</div>
             </div>
 
-            <!-- 1. 초음파 센서(TRIG, ECHO) 및 서보 모터 핀 입력 카드 -->
-            <div class="card">
-                <h2>
-                    <span>🔌 1단계: 초음파 센서(TRIG, ECHO) 및 모터 핀 설정</span>
-                    <button id="btnPromptPinsModal" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">대화창으로 핀 입력하기</button>
-                </h2>
-                <p style="margin: 0 0 14px; color: #555; font-size: 0.95em;">
-                    아두이노에 연결된 <strong>초음파 센서(TRIG, ECHO)</strong> 핀과 <strong>서보 모터(SERVO)</strong> 핀을 아래 버튼이나 선택창으로 설정하세요.
-                </p>
-
-                <div class="pin-cards-grid">
-                    <!-- TRIG 핀 -->
-                    <div class="pin-card configured" id="trigPinCard">
-                        <span class="pin-icon">📡</span>
-                        <div class="pin-title">초음파 TRIG 핀</div>
-                        <span class="pin-badge" id="trigPinBadge">D7 (7번 핀)</span>
-                        <div class="pin-quick-row">
-                            <select id="trigPinSelect" aria-label="TRIG 핀 번호">
-                                <option value="2">D2 (2번)</option>
-                                <option value="3">D3 (3번)</option>
-                                <option value="4">D4 (4번)</option>
-                                <option value="5">D5 (5번)</option>
-                                <option value="6">D6 (6번)</option>
-                                <option value="7" selected>D7 (7번 - 기본)</option>
-                                <option value="8">D8 (8번)</option>
-                                <option value="9">D9 (9번)</option>
-                                <option value="10">D10 (10번)</option>
-                                <option value="11">D11 (11번)</option>
-                                <option value="12">D12 (12번)</option>
-                                <option value="13">D13 (13번)</option>
-                            </select>
-                            <button type="button" class="btn btn-primary" id="btnFocusTrig" style="padding: 7px 12px; font-size: 0.85em;">핀 입력</button>
-                        </div>
-                    </div>
-
-                    <!-- ECHO 핀 -->
-                    <div class="pin-card configured" id="echoPinCard">
-                        <span class="pin-icon">🔊</span>
-                        <div class="pin-title">초음파 ECHO 핀</div>
-                        <span class="pin-badge" id="echoPinBadge">D8 (8번 핀)</span>
-                        <div class="pin-quick-row">
-                            <select id="echoPinSelect" aria-label="ECHO 핀 번호">
-                                <option value="2">D2 (2번)</option>
-                                <option value="3">D3 (3번)</option>
-                                <option value="4">D4 (4번)</option>
-                                <option value="5">D5 (5번)</option>
-                                <option value="6">D6 (6번)</option>
-                                <option value="7">D7 (7번)</option>
-                                <option value="8" selected>D8 (8번 - 기본)</option>
-                                <option value="9">D9 (9번)</option>
-                                <option value="10">D10 (10번)</option>
-                                <option value="11">D11 (11번)</option>
-                                <option value="12">D12 (12번)</option>
-                                <option value="13">D13 (13번)</option>
-                            </select>
-                            <button type="button" class="btn btn-primary" id="btnFocusEcho" style="padding: 7px 12px; font-size: 0.85em;">핀 입력</button>
-                        </div>
-                    </div>
-
-                    <!-- 서보 모터 핀 -->
-                    <div class="pin-card configured" id="servoPinCard">
-                        <span class="pin-icon">⚙️</span>
-                        <div class="pin-title">서보 모터(SERVO) 핀</div>
-                        <span class="pin-badge" id="servoPinBadge">D4 (4번 핀)</span>
-                        <div class="pin-quick-row">
-                            <select id="servoPinSelect" aria-label="모터 핀 번호">
-                                <option value="2">D2 (2번)</option>
-                                <option value="3">D3 (3번 PWM)</option>
-                                <option value="4" selected>D4 (4번 - 기본)</option>
-                                <option value="5">D5 (5번 PWM)</option>
-                                <option value="6">D6 (6번 PWM)</option>
-                                <option value="7">D7 (7번)</option>
-                                <option value="8">D8 (8번)</option>
-                                <option value="9">D9 (9번 PWM)</option>
-                                <option value="10">D10 (10번 PWM)</option>
-                                <option value="11">D11 (11번 PWM)</option>
-                                <option value="12">D12 (12번)</option>
-                                <option value="13">D13 (13번)</option>
-                            </select>
-                            <button type="button" class="btn btn-primary" id="btnFocusServo" style="padding: 7px 12px; font-size: 0.85em;">모터 핀 입력</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="code-preview" id="codePreview">
+                <pre id="codeContent"></pre>
             </div>
         </div>
 
-        <!-- [섹션 B] 2. 모터가 작동되는 각도를 조절하는 탭 -->
-        <div id="sectionAngle" style="display: none;">
-            <div class="card">
-                <h2>
-                    <span>📐 2단계: 모터 작동 각도 및 스윕 주기 조절</span>
-                    <span class="angle-Readout" id="angleSummaryBadge">10° ~ 170° (주기 4.0초)</span>
-                </h2>
+        <!-- 실시간 레이더 작동 화면 -->
+        <div class="card">
+            <h2>
+                <span>🎯 Remote Ultrasonic Radar System (실시간 레이더)</span>
+                <span id="serialStatusBadge" class="status status-disconnected">데이터 대기 중</span>
+            </h2>
 
-                <div class="angle-control-box">
-                    <div class="angle-range-visual">
-                        <div>
-                            <strong>현재 모터 회전 범위:</strong>
-                            <span id="angleRangeText" style="color:#4b3bbd; font-weight:700;">최소 10° ↔ 최대 170° (총 320 스텝/주기)</span>
-                        </div>
-                        <div>
-                            <span style="font-size:0.9em; color:#666;">스텝당 대기시간(STEP_DELAY_US): <strong id="stepDelayPreview">12500 µs</strong></span>
-                        </div>
-                    </div>
-
-                    <div class="settings-grid">
-                        <div class="form-group">
-                            <label for="minAngleInput">최소 각도 (MIN_ANGLE: 0° ~ 179°)</label>
-                            <input type="range" id="minAngleSlider" min="0" max="170" value="10" style="margin-bottom: 6px;" />
-                            <input type="number" id="minAngleInput" min="0" max="170" value="10" />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="maxAngleInput">최대 각도 (MAX_ANGLE: 1° ~ 180°)</label>
-                            <input type="range" id="maxAngleSlider" min="10" max="180" value="170" style="margin-bottom: 6px;" />
-                            <input type="number" id="maxAngleInput" min="10" max="180" value="170" />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="cycleMsInput">왕복 1주기 시간 (CYCLE_MS, 밀리초)</label>
-                            <input type="number" id="cycleMsInput" min="1000" max="20000" step="500" value="4000" />
-                            <small style="color:#666; margin-top:4px;">기본 4000ms (4초에 왕복 1회 회전)</small>
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong style="font-size: 0.9em; color: #555;">⚡ 빠른 각도 프리셋 선택:</strong>
-                        <div class="preset-chips">
-                            <button type="button" class="preset-chip active" data-min="10" data-max="170">기본 레이더 (10° ~ 170°)</button>
-                            <button type="button" class="preset-chip" data-min="0" data-max="180">전체 반원 (0° ~ 180°)</button>
-                            <button type="button" class="preset-chip" data-min="30" data-max="150">전방 120° 집중 (30° ~ 150°)</button>
-                            <button type="button" class="preset-chip" data-min="45" data-max="135">전방 90° 정밀 (45° ~ 135°)</button>
-                            <button type="button" class="preset-chip" data-min="60" data-max="120">좁은 구역 (60° ~ 120°)</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- [공통 업로드 카드] 3. 아두이노 코드 업로드 버튼 & 코드 미리보기 -->
-        <div id="sectionUploadCard">
-            <div class="card">
-                <h2>
-                    <span>🚀 3단계: 아두이노 레이더 코드 생성 및 업로드</span>
-                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <label style="font-size:13px; font-weight:600; color:#4b3bbd; display:inline-flex; align-items:center; gap:5px; cursor:pointer; background:#eef1ff; padding:5px 10px; border-radius:8px;">
-                            <input type="checkbox" id="chkNoServoLib" />
-                            Servo.h 미설치 환경 호환 모드(내장 PWM)
-                        </label>
-                        <button id="btnToggleCode" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">코드 보기/숨기기</button>
-                        <button id="btnCopyCode" class="btn btn-outline" type="button" style="padding: 6px 12px; font-size: 13px;">📋 코드 복사</button>
-                    </div>
-                </h2>
-
-                <div class="connection-section">
-                    <button id="btnUploadRadarCode" class="btn btn-primary" type="button" style="padding: 14px 28px; font-size: 1.05em;">
-                        ⚡ 아두이노 레이더 코드 업로드
+            <div class="connection-section" style="justify-content: space-between;">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button id="btnConnectWebSerial" class="btn btn-primary" type="button">
+                        🔌 아두이노 시리얼 연결 (Web Serial)
                     </button>
-                    <button id="btnGoToRadarTab" class="btn btn-success" type="button" style="padding: 14px 22px;">
-                        📡 레이더 화면으로 이동
+                    <button id="btnToggleSim" class="btn btn-success" type="button">
+                        ▶️ 데모 시뮬레이션 시작
+                    </button>
+                    <button id="btnClearRadar" class="btn btn-outline" type="button">
+                        🧹 레이더 맵 초기화
                     </button>
                 </div>
 
-                <div class="progress-bar" id="progressBar">
-                    <div class="progress-fill" id="progressFill">0%</div>
-                </div>
-
-                <div class="code-preview" id="codePreview">
-                    <pre id="codeContent"></pre>
+                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                    <label style="font-size:0.9em; font-weight:600; color:#444; display:flex; align-items:center; gap:6px;">
+                        최대 반경(R_MAX):
+                        <select id="rmaxSelect" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-weight:700;">
+                            <option value="0.5">0.5 m (파이썬 기본)</option>
+                            <option value="1.0" selected>1.0 m (이미지 동일)</option>
+                            <option value="2.0">2.0 m (장거리)</option>
+                        </select>
+                    </label>
+                    <label style="font-size:0.88em; font-weight:600; color:#444; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                        <input type="checkbox" id="chkShowOuterArc" checked />
+                        미감지 시 외곽 호 표시
+                    </label>
+                    <label style="font-size:0.88em; font-weight:600; color:#444; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                        <input type="checkbox" id="chkResetOnZero" checked />
+                        주기 시작점 리셋
+                    </label>
                 </div>
             </div>
-        </div>
 
-        <!-- [섹션 C] 5 & 6. 실시간 레이더 작동 화면 (파이썬 matplotlib 극좌표 플롯 완벽 재현) -->
-        <div id="sectionRadar" style="display: none;">
-            <div class="card">
-                <h2>
-                    <span>🎯 Remote Ultrasonic Radar System (실시간 레이더)</span>
-                    <span id="serialStatusBadge" class="status status-disconnected">데이터 대기 중</span>
-                </h2>
+            <!-- 레이더 캔버스 -->
+            <div class="radar-wrapper" id="radarWrapper">
+                <canvas id="radarCanvas" width="760" height="470"></canvas>
 
-                <div class="connection-section" style="justify-content: space-between;">
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <button id="btnConnectWebSerial" class="btn btn-primary" type="button">
-                            🔌 아두이노 시리얼 연결 (Web Serial)
-                        </button>
-                        <button id="btnConnectServerSerial" class="btn btn-outline" type="button">
-                            🖥️ 로컬 서버에서 데이터 수신
-                        </button>
-                        <button id="btnToggleSim" class="btn btn-success" type="button">
-                            ▶️ 데모 시뮬레이션 시작
-                        </button>
-                        <button id="btnClearRadar" class="btn btn-outline" type="button">
-                            🧹 레이더 맵 초기화
-                        </button>
+                <div class="radar-stats-bar">
+                    <div class="stat-pill">
+                        <div class="label">현재 모터 각도 (Angle)</div>
+                        <div class="val" id="statCurrentAngle">0°</div>
                     </div>
-
-                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-                        <label style="font-size:0.9em; font-weight:600; color:#444; display:flex; align-items:center; gap:6px;">
-                            최대 반경(R_MAX):
-                            <select id="rmaxSelect" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-weight:700;">
-                                <option value="0.5">0.5 m (파이썬 기본)</option>
-                                <option value="1.0" selected>1.0 m (이미지 동일)</option>
-                                <option value="2.0">2.0 m (장거리)</option>
-                            </select>
-                        </label>
-                        <label style="font-size:0.88em; font-weight:600; color:#444; display:flex; align-items:center; gap:5px; cursor:pointer;">
-                            <input type="checkbox" id="chkShowOuterArc" checked />
-                            미감지 시 외곽 호 표시
-                        </label>
-                        <label style="font-size:0.88em; font-weight:600; color:#444; display:flex; align-items:center; gap:5px; cursor:pointer;">
-                            <input type="checkbox" id="chkResetOnZero" checked />
-                            주기 시작점 리셋
-                        </label>
+                    <div class="stat-pill">
+                        <div class="label">측정 거리 (cm)</div>
+                        <div class="val" id="statCurrentCm">-- cm</div>
                     </div>
-                </div>
-
-                <!-- 레이더 캔버스 (첨부 이미지와 동일한 반원 극좌표 레이더) -->
-                <div class="radar-wrapper" id="radarWrapper">
-                    <canvas id="radarCanvas" width="760" height="470"></canvas>
-
-                    <div class="radar-stats-bar">
-                        <div class="stat-pill">
-                            <div class="label">현재 모터 각도 (Angle)</div>
-                            <div class="val" id="statCurrentAngle">0°</div>
-                        </div>
-                        <div class="stat-pill">
-                            <div class="label">측정 거리 (cm)</div>
-                            <div class="val" id="statCurrentCm">-- cm</div>
-                        </div>
-                        <div class="stat-pill">
-                            <div class="label">측정 거리 (m)</div>
-                            <div class="val" id="statCurrentM">-- m</div>
-                        </div>
-                        <div class="stat-pill">
-                            <div class="label">저장된 스캔 포인트</div>
-                            <div class="val" id="statPointCount">0 개</div>
-                        </div>
+                    <div class="stat-pill">
+                        <div class="label">측정 거리 (m)</div>
+                        <div class="val" id="statCurrentM">-- m</div>
                     </div>
-                </div>
-
-                <!-- 수동 데이터 테스트 입력 바 -->
-                <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: #f8fafc; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                    <span style="font-size: 0.88em; font-weight: 700; color: #475569;">🧪 수동 데이터 패킷 테스트 (angle,distance_cm):</span>
-                    <input type="text" id="manualPacketInput" value="120,55.0" placeholder="예: 90,45.2" style="padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; width: 140px; font-family: monospace;" />
-                    <button type="button" id="btnSendManualPacket" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.86em;">데이터 주입</button>
-                    <span style="font-size: 0.82em; color: #64748b;">(아두이노가 보내는 <code>각도,거리(cm)</code> 문자열을 직접 입력해 볼 수 있습니다)</span>
+                    <div class="stat-pill">
+                        <div class="label">저장된 스캔 포인트</div>
+                        <div class="val" id="statPointCount">0 개</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1106,11 +693,11 @@
         <!-- 업로드 및 데이터 수신 로그 카드 -->
         <div class="card">
             <h2>
-                <span>📋 시스템 &amp; 시리얼 로그</span>
+                <span>📋 업로드 로그</span>
                 <button id="btnClearLog" class="btn btn-outline" type="button" style="padding: 5px 12px; font-size: 12px;">로그 지우기</button>
             </h2>
             <div class="log-section" id="logSection">
-                <div class="log-message log-info">1) setup 실행 → 2) 서버 상태 확인 → 3) 포트 새로고침 → 4) 레이더 코드 업로드 → 5) Web Serial로 레이더 시작</div>
+                <div class="log-message log-info">1) setup 실행 → 2) 서버 상태 확인 → 3) 포트 새로고침 → 4) 레이더 코드 업로드 → 5) 시리얼 연결</div>
             </div>
         </div>
     </div>
@@ -1121,12 +708,12 @@
         <img id="hukCharImg" src="https://lh3.googleusercontent.com/d/1zBWvt8nrhCOPk47fCJLsdgR0BkFBk2QH" alt="HUK character" />
     </div>
 
-    <!-- 1. 사이트 진입 시 핀 번호 입력 안내 모달 -->
+    <!-- 사이트 진입 시 및 [핀 번호 설정] 클릭 시 열리는 핀 번호 입력 모달 -->
     <div id="pinWizardModal" class="modal" style="display: flex;">
         <div class="modal-content">
             <h3>🔌 초음파 레이더 핀 번호 설정</h3>
             <p>
-                환영합니다! 아두이노에 연결된 <strong>초음파 센서(TRIG, ECHO)</strong> 핀과 <strong>서보 모터(SERVO)</strong> 핀 번호를 선택해 주세요.
+                아두이노에 연결된 <strong>초음파 센서(TRIG, ECHO)</strong> 핀과 <strong>서보 모터(SERVO)</strong> 핀 번호를 입력해 주세요.
             </p>
 
             <div class="settings-grid" style="grid-template-columns: 1fr; gap: 14px; margin: 16px 0;">
@@ -1146,21 +733,21 @@
 
             <div style="display: flex; gap: 10px; margin-top: 16px;">
                 <button id="btnApplyModalPins" class="btn btn-primary" type="button" style="flex: 1;">
-                    ✅ 핀 설정 완료 및 시작하기
+                    ✅ 핀 설정 완료
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 2. 사용법 모달 (#btnHelp 클릭 시) -->
+    <!-- 사용법 모달 (#btnHelp 클릭 시) -->
     <div id="helpModal" class="modal">
         <div class="modal-content">
-            <h3>📖 초음파 레이더 웹사이트 사용법</h3>
+            <h3>📖 초음파 레이더 시스템 사용법</h3>
             <ol class="step-guide-list">
-                <li><strong>핀 번호 설정:</strong> 초음파 센서의 <code>TRIG</code>(기본 7번), <code>ECHO</code>(기본 8번) 핀과 서보 모터 핀(기본 4번)을 입력합니다.</li>
-                <li><strong>모터 각도 조절:</strong> <strong>[2️⃣ 모터 작동 각도 조절 탭]</strong>에서 모터의 최소/최대 회전 각도(예: 10° ~ 170°)와 왕복 주기 시간(기본 4000ms)을 조절합니다.</li>
-                <li><strong>로컬 서버 연결 &amp; 업로드:</strong> 로컬 백엔드 서버를 실행한 뒤 <strong>[서버 상태 확인]</strong> → 포트 선택 → <strong>[⚡ 아두이노 레이더 코드 업로드]</strong> 버튼을 누릅니다.</li>
-                <li><strong>실시간 레이더 작동:</strong> <strong>[3️⃣ 실시간 초음파 레이더]</strong> 탭에서 <strong>[🔌 아두이노 시리얼 연결 (Web Serial)]</strong>을 누르고 아두이노 포트를 선택하면 <code>angle,distance</code> 데이터를 받아 레이더를 실시간으로 그립니다.</li>
+                <li><strong>핀 번호 설정:</strong> 상단의 <strong>[핀 번호 설정]</strong>에서 초음파 센서의 <code>TRIG</code>(기본 7번), <code>ECHO</code>(기본 8번) 핀과 서보 모터 핀(기본 4번)을 입력합니다.</li>
+                <li><strong>모터 각도 및 주기 조절:</strong> 슬라이더로 모터의 최소/최대 회전 각도와 왕복 주기(초)를 조절합니다.</li>
+                <li><strong>로컬 서버 연결 &amp; 업로드:</strong> 로컬 서버를 실행한 뒤 <strong>[서버 상태 확인]</strong> → 포트 선택 → <strong>[⚡ 아두이노 레이더 코드 업로드]</strong> 버튼을 누릅니다.</li>
+                <li><strong>실시간 레이더 작동:</strong> <strong>[🔌 아두이노 시리얼 연결 (Web Serial)]</strong> 버튼을 누르고 아두이노 포트를 선택하면 실시간으로 레이더를 그립니다.</li>
             </ol>
             <div style="display:flex; gap:10px; margin-top:12px;">
                 <button id="btnOpenYoutubeHelp" class="btn btn-outline" type="button" style="flex:1;">🎬 유튜브 영상 가이드 열기</button>
@@ -1169,19 +756,7 @@
         </div>
     </div>
 
-    <!-- 3. 개발자 소개 모달 -->
-    <div id="devModal" class="modal">
-        <div class="modal-content">
-            <h3>개발자 소개</h3>
-            <p>
-                인천광역시 교사 장희욱<br />
-                문의 사항: jhu1596@naver.com
-            </p>
-            <button id="btnDevClose" class="btn btn-primary" type="button" style="width:100%;margin-top:12px;">닫기</button>
-        </div>
-    </div>
-
-    <!-- 4. 서버 연결 방법 모달 (LEFTHUK 14장 이미지 슬라이더 동일 적용) -->
+    <!-- 서버 연결 방법 모달 (14장 이미지 슬라이더) -->
     <div id="serverGuideModal" class="modal">
         <div class="modal-content" style="width: min(800px, 92%); text-align: center;">
             <h3>서버 연결 방법</h3>
@@ -1205,7 +780,7 @@
 
     <script>
         // =========================================================
-        // LEFTHUK 로컬 서버 기본 후보 주소 (LEFTHUK 코드와 100% 동일)
+        // 로컬 서버 기본 후보 주소
         // =========================================================
         const DEFAULT_API_HTTP = "http://127.0.0.1:8000";
         const DEFAULT_API_HTTPS_PRIMARY = "https://127.0.0.1:18443";
@@ -1220,8 +795,8 @@
             servoPin: 4,
             minAngle: 10,
             maxAngle: 170,
-            cycleMs: 4000,
-            noServoLib: false, // Servo.h 미설치 환경을 위한 내장 PWM 모드
+            cycleSec: 4, // 초 단위 (기본 4초)
+            noServoLib: false,
             rmax: 1.0,
             showOuterArc: true,
             resetOnZero: true,
@@ -1233,15 +808,13 @@
             serialPort: null,
             serialReader: null,
             isReadingSerial: false,
-            serverPollTimer: null,
             simTimer: null,
             simAngle: 10,
             simDirection: 1
         };
 
-        // LEFTHUK와 동일한 localStorage 키("API_BASE") 사용
         try {
-            const savedApi = localStorage.getItem("API_BASE") || localStorage.getItem("lefthuk_api_base");
+            const savedApi = localStorage.getItem("API_BASE");
             if (savedApi) {
                 state.apiBase = savedApi;
             }
@@ -1286,14 +859,14 @@
         }
 
         // =========================================================
-        // 1. 아두이노 코드 자동 생성 (Servo.h 버전 & 내장 PWM 버전 지원)
+        // 1. 아두이노 코드 자동 생성
         // =========================================================
         function generateArduinoCode() {
+            const cycleMs = Math.round(state.cycleSec * 1000);
             const totalSteps = Math.max(1, (state.maxAngle - state.minAngle) * 2);
-            const stepDelayUs = Math.round((state.cycleMs * 1000) / totalSteps);
+            const stepDelayUs = Math.round((cycleMs * 1000) / totalSteps);
 
             if (state.noServoLib) {
-                // 로컬 서버(backend-uploader.exe)에 Servo 라이브러리가 없을 때도 100% 컴파일되는 내장 PWM 버전
                 return `// [호환 모드] 외부 Servo.h 라이브러리 없이 내장 PWM 펄스로 서보 모터 제어
 #define SERVO_PIN ${state.servoPin}
 #define TRIG_PIN ${state.trigPin}
@@ -1301,7 +874,7 @@
 
 const int MIN_ANGLE = ${state.minAngle};
 const int MAX_ANGLE = ${state.maxAngle};
-const unsigned long CYCLE_MS = ${state.cycleMs}UL;
+const unsigned long CYCLE_MS = ${cycleMs}UL;
 const int TOTAL_STEPS = (MAX_ANGLE - MIN_ANGLE) * 2;
 const unsigned long STEP_DELAY_US = CYCLE_MS * 1000UL / TOTAL_STEPS; // 약 ${stepDelayUs}µs
 
@@ -1365,7 +938,7 @@ Servo scanner;
 // Sweep parameters
 const int MIN_ANGLE = ${state.minAngle};
 const int MAX_ANGLE = ${state.maxAngle};
-const unsigned long CYCLE_MS = ${state.cycleMs}UL;           // ${state.cycleMs}ms에 MIN→MAX→MIN 한 주기
+const unsigned long CYCLE_MS = ${cycleMs}UL;           // ${state.cycleSec}초에 MIN→MAX→MIN 한 주기
 const int TOTAL_STEPS = (MAX_ANGLE - MIN_ANGLE) * 2;
 const unsigned long STEP_DELAY_US =
     CYCLE_MS * 1000UL / TOTAL_STEPS;           // 약 ${stepDelayUs}µs
@@ -1418,31 +991,21 @@ void measureAndSend(int angle) {
         }
 
         function updateUIFromState() {
-            document.getElementById("trigPinBadge").textContent = `D${state.trigPin} (${state.trigPin}번 핀)`;
-            document.getElementById("echoPinBadge").textContent = `D${state.echoPin} (${state.echoPin}번 핀)`;
-            document.getElementById("servoPinBadge").textContent = `D${state.servoPin} (${state.servoPin}번 핀)`;
-
-            document.getElementById("trigPinSelect").value = String(state.trigPin);
-            document.getElementById("echoPinSelect").value = String(state.echoPin);
-            document.getElementById("servoPinSelect").value = String(state.servoPin);
-
             document.getElementById("modalTrigPin").value = String(state.trigPin);
             document.getElementById("modalEchoPin").value = String(state.echoPin);
             document.getElementById("modalServoPin").value = String(state.servoPin);
 
-            document.getElementById("minAngleSlider").value = String(state.minAngle);
-            document.getElementById("minAngleInput").value = String(state.minAngle);
-            document.getElementById("maxAngleSlider").value = String(state.maxAngle);
-            document.getElementById("maxAngleInput").value = String(state.maxAngle);
-            document.getElementById("cycleMsInput").value = String(state.cycleMs);
+            document.getElementById("currentPinInfoText").textContent =
+                `현재 핀 설정: TRIG=D${state.trigPin}, ECHO=D${state.echoPin}, 모터=D${state.servoPin}`;
 
-            const totalSteps = Math.max(1, (state.maxAngle - state.minAngle) * 2);
-            const stepDelayUs = Math.round((state.cycleMs * 1000) / totalSteps);
+            document.getElementById("minAngleSlider").value = String(state.minAngle);
+            document.getElementById("maxAngleSlider").value = String(state.maxAngle);
+            document.getElementById("minAngleValText").textContent = String(state.minAngle);
+            document.getElementById("maxAngleValText").textContent = String(state.maxAngle);
+            document.getElementById("cycleSecInput").value = String(state.cycleSec);
+
             document.getElementById("angleSummaryBadge").textContent =
-                `${state.minAngle}° ~ ${state.maxAngle}° (주기 ${(state.cycleMs / 1000).toFixed(1)}초)`;
-            document.getElementById("angleRangeText").textContent =
-                `최소 ${state.minAngle}° ↔ 최대 ${state.maxAngle}° (총 ${totalSteps} 스텝/주기)`;
-            document.getElementById("stepDelayPreview").textContent = `${stepDelayUs.toLocaleString()} µs`;
+                `${state.minAngle}° ~ ${state.maxAngle}° (주기 ${state.cycleSec}초)`;
 
             document.getElementById("codeContent").textContent = generateArduinoCode();
         }
@@ -1628,7 +1191,7 @@ void measureAndSend(int angle) {
             document.getElementById("btnToggleSim").textContent = "⏹️ 데모 시뮬레이션 정지";
             document.getElementById("btnToggleSim").className = "btn btn-danger";
 
-            addLog("레이더 데모 시뮬레이션을 시작했습니다. (가상 장애물 스캔 중)", "info");
+            addLog("레이더 데모 시뮬레이션을 시작했습니다.", "info");
 
             state.simTimer = setInterval(() => {
                 const a = state.simAngle;
@@ -1662,7 +1225,7 @@ void measureAndSend(int angle) {
             const btn = document.getElementById("btnToggleSim");
             btn.textContent = "▶️ 데모 시뮬레이션 시작";
             btn.className = "btn btn-success";
-            if (!state.isReadingSerial && !state.serverPollTimer) {
+            if (!state.isReadingSerial) {
                 const badge = document.getElementById("serialStatusBadge");
                 badge.className = "status status-disconnected";
                 badge.textContent = "데이터 대기 중";
@@ -1670,7 +1233,7 @@ void measureAndSend(int angle) {
         }
 
         // =========================================================
-        // 5. Web Serial API 연결 (브라우저 -> 아두이노 직접 수신)
+        // 5. Web Serial API 연결
         // =========================================================
         async function connectWebSerial() {
             if (!("serial" in navigator)) {
@@ -1694,7 +1257,7 @@ void measureAndSend(int angle) {
                 badge.className = "status status-connected";
                 badge.textContent = "시리얼 수신 중 (9600bps)";
                 document.getElementById("btnConnectWebSerial").textContent = "🔌 시리얼 연결 해제";
-                addLog("아두이노 Web Serial 포트가 연결되었습니다. 실시간 레이더 데이터를 수신합니다.", "success");
+                addLog("아두이노 시리얼 포트가 연결되었습니다. 실시간 레이더 데이터를 수신합니다.", "success");
 
                 const textDecoder = new TextDecoderStream();
                 port.readable.pipeTo(textDecoder.writable);
@@ -1740,13 +1303,8 @@ void measureAndSend(int angle) {
         }
 
         // =========================================================
-        // 6. LEFTHUK 로컬 서버 API 연동 (LEFTHUK 스크립트와 100% 동일한 방식)
+        // 6. 로컬 서버 API 연동
         // =========================================================
-        function updateApiBaseUi() {
-            document.getElementById("apiBaseInput").value = state.apiBase;
-            document.getElementById("apiBaseNow").textContent = state.apiBase;
-        }
-
         async function apiFetch(path, options = {}) {
             return fetch(state.apiBase + path, { ...options, mode: "cors" });
         }
@@ -1762,8 +1320,6 @@ void measureAndSend(int angle) {
         }
 
         async function autoPickApiBase() {
-            addLog("로컬 서버 자동 감지 중...", "info");
-
             const candidates =
                 location.protocol === "https:"
                     ? [DEFAULT_API_HTTPS_PRIMARY, DEFAULT_API_HTTPS_LEGACY, DEFAULT_API_HTTP]
@@ -1771,13 +1327,11 @@ void measureAndSend(int angle) {
 
             for (const base of candidates) {
                 const ok = await probe(base);
-                addLog(`서버 감지 (${base}): ${ok ? "OK" : "FAIL"}`, ok ? "success" : "warning");
                 if (ok) {
                     state.apiBase = base;
                     try {
                         localStorage.setItem("API_BASE", base);
                     } catch (e) {}
-                    updateApiBaseUi();
                     return base;
                 }
             }
@@ -1786,7 +1340,7 @@ void measureAndSend(int angle) {
 
         async function checkLocalServer() {
             showLoading("서버 상태를 확인하는 중입니다...");
-            addLog(`서버 상태 확인 중... (${state.apiBase}/api/health)`, "info");
+            addLog("서버 상태 확인 중...", "info");
             try {
                 const r = await apiFetch("/api/health");
                 const j = await r.json();
@@ -1796,14 +1350,13 @@ void measureAndSend(int angle) {
                 statusEl.textContent = "서버 연결됨";
                 statusEl.className = "status status-connected";
                 state.serverConnected = true;
-                addLog(`서버 OK (${j.version || "arduino-cli 확인됨"})`, "success");
+                addLog("서버 OK", "success");
             } catch (e) {
                 const statusEl = document.getElementById("serverStatus");
                 statusEl.textContent = "서버 미연결";
                 statusEl.className = "status status-disconnected";
                 state.serverConnected = false;
                 addLog(`서버 오류: ${e.message || e}`, "error");
-                addLog("💡 [원인 안내] backend-uploader.exe(server.js)의 ALLOWED_ORIGINS에 현재 사이트 주소가 없거나, 로컬 파일(file://)로 열었을 때 CORS가 차단될 수 있습니다. 로컬 서버 폴더 내 public 폴더에 이 파일을 넣고 http://127.0.0.1:8000 또는 https://127.0.0.1:18443 으로 접속해 보세요.", "warning");
             } finally {
                 hideLoading();
             }
@@ -1843,7 +1396,7 @@ void measureAndSend(int angle) {
                 }
 
                 const portNames = ports.map((p) => (typeof p === "object" && p !== null ? p.port : p));
-                addLog(`${ports.length}개 포트 발견: ${portNames.join(", ")}`, "success");
+                addLog(`${ports.length}개 포트: ${portNames.join(", ")}`, "success");
             } catch (e) {
                 addLog(`포트 목록 오류: ${e.message || e}`, "error");
             } finally {
@@ -1867,14 +1420,11 @@ void measureAndSend(int angle) {
                 addLog(`실패 단계: ${j.step || "unknown"}`, "error");
                 if (j.stderr) addLog(j.stderr, "error");
                 if (j.stdout) addLog(j.stdout, "info");
-                if (j.stderr && /Servo\.h/i.test(j.stderr)) {
-                    addLog("💡 Servo.h 라이브러리가 로컬 서버에 없는 경우, 상단의 [Servo.h 미설치 환경 호환 모드(내장 PWM)] 체크박스를 켜고 다시 업로드하세요!", "warning");
-                }
                 throw new Error(j.stderr || "업로드 실패");
             }
 
             showProgress(100, "완료!");
-            addLog(`✅ ${title} 성공! 이제 [3️⃣ 실시간 초음파 레이더] 탭에서 Web Serial 연결을 눌러 레이더를 시작하세요.`, "success");
+            addLog(`✅ ${title} 성공!`, "success");
             setTimeout(hideProgress, 1200);
         }
 
@@ -1884,7 +1434,7 @@ void measureAndSend(int angle) {
             const code = generateArduinoCode();
 
             if (!port) {
-                addLog("업로드할 아두이노 포트를 먼저 선택해 주세요! (포트 목록 새로고침 필요)", "warning");
+                addLog("업로드할 아두이노 포트를 먼저 선택해 주세요!", "warning");
                 return;
             }
 
@@ -1904,12 +1454,8 @@ void measureAndSend(int angle) {
             }
         }
 
-        function toggleServerSerialStream() {
-            addLog("참고: LEFTHUK의 backend-uploader.exe(server.js)는 코드 업로드 전용 서버이며 시리얼 스트리밍 API(/api/serial)를 포함하고 있지 않습니다. 왼쪽의 [🔌 아두이노 시리얼 연결 (Web Serial)] 버튼을 눌러 브라우저에서 직접 아두이노 데이터를 수신하세요!", "info");
-        }
-
         // =========================================================
-        // 7. 서버 연결 방법 14페이지 가이드 슬라이더 (LEFTHUK 동일)
+        // 7. 서버 연결 방법 14페이지 가이드 슬라이더
         // =========================================================
         let currentGuidePage = 1;
         const totalGuidePages = 14;
@@ -1938,48 +1484,12 @@ void measureAndSend(int angle) {
         }
 
         // =========================================================
-        // 8. 탭 전환 및 이벤트 바인딩
+        // 8. 초기화 및 이벤트 바인딩
         // =========================================================
-        function switchTab(tabName) {
-            document.querySelectorAll(".main-tab-btn").forEach((btn) => {
-                btn.classList.toggle("active", btn.dataset.tab === tabName);
-            });
-
-            const secSetup = document.getElementById("sectionSetup");
-            const secAngle = document.getElementById("sectionAngle");
-            const secUpload = document.getElementById("sectionUploadCard");
-            const secRadar = document.getElementById("sectionRadar");
-
-            if (tabName === "setup") {
-                secSetup.style.display = "block";
-                secAngle.style.display = "none";
-                secUpload.style.display = "block";
-                secRadar.style.display = "none";
-            } else if (tabName === "angle") {
-                secSetup.style.display = "none";
-                secAngle.style.display = "block";
-                secUpload.style.display = "block";
-                secRadar.style.display = "none";
-            } else if (tabName === "radar") {
-                secSetup.style.display = "none";
-                secAngle.style.display = "none";
-                secUpload.style.display = "none";
-                secRadar.style.display = "block";
-                drawRadar();
-            } else {
-                secSetup.style.display = "block";
-                secAngle.style.display = "block";
-                secUpload.style.display = "block";
-                secRadar.style.display = "block";
-                drawRadar();
-            }
-        }
-
         window.addEventListener("DOMContentLoaded", async () => {
-            updateApiBaseUi();
             updateUIFromState();
 
-            // 초기 데모 포인트 세팅
+            // 초기 레이더 미리보기 포인트
             for (let deg = 10; deg <= 125; deg++) {
                 let dCm = 96.0;
                 if (Math.abs(deg - 34) <= 1) dCm = 62.0;
@@ -1988,12 +1498,7 @@ void measureAndSend(int angle) {
                 processRadarLine(`${deg},${dCm}`);
             }
 
-            // 탭 버튼 클릭
-            document.querySelectorAll(".main-tab-btn").forEach((btn) => {
-                btn.addEventListener("click", () => switchTab(btn.dataset.tab));
-            });
-
-            // 초기 진입 핀 설정 모달 적용 버튼
+            // 핀 번호 설정 모달 적용 버튼
             document.getElementById("btnApplyModalPins").addEventListener("click", () => {
                 const trig = parseInt(document.getElementById("modalTrigPin").value, 10);
                 const echo = parseInt(document.getElementById("modalEchoPin").value, 10);
@@ -2005,48 +1510,29 @@ void measureAndSend(int angle) {
 
                 updateUIFromState();
                 document.getElementById("pinWizardModal").style.display = "none";
-                addLog(`핀 설정 완료: TRIG=D${state.trigPin}, ECHO=D${state.echoPin}, SERVO=D${state.servoPin}`, "success");
+                addLog(`핀 설정 완료: TRIG=D${state.trigPin}, ECHO=D${state.echoPin}, 모터=D${state.servoPin}`, "success");
             });
 
-            const openPinModal = () => {
+            // 상단 [핀 번호 설정] 버튼
+            document.getElementById("btnOpenPinWizard").addEventListener("click", () => {
                 document.getElementById("pinWizardModal").style.display = "flex";
-            };
-            document.getElementById("btnOpenPinWizard").addEventListener("click", openPinModal);
-            document.getElementById("btnPromptPinsModal").addEventListener("click", openPinModal);
-            document.getElementById("btnFocusTrig").addEventListener("click", openPinModal);
-            document.getElementById("btnFocusEcho").addEventListener("click", openPinModal);
-            document.getElementById("btnFocusServo").addEventListener("click", openPinModal);
+            });
 
-            // 카드 내 핀 드롭다운 변경
-            document.getElementById("trigPinSelect").addEventListener("change", (e) => {
-                state.trigPin = parseInt(e.target.value, 10);
-                updateUIFromState();
-                addLog(`초음파 TRIG 핀이 D${state.trigPin}번으로 변경되었습니다.`, "info");
-            });
-            document.getElementById("echoPinSelect").addEventListener("change", (e) => {
-                state.echoPin = parseInt(e.target.value, 10);
-                updateUIFromState();
-                addLog(`초음파 ECHO 핀이 D${state.echoPin}번으로 변경되었습니다.`, "info");
-            });
-            document.getElementById("servoPinSelect").addEventListener("change", (e) => {
-                state.servoPin = parseInt(e.target.value, 10);
-                updateUIFromState();
-                addLog(`서보 모터(SERVO) 핀이 D${state.servoPin}번으로 변경되었습니다.`, "info");
+            // 상단 [서버 연결] 버튼 (새 SharePoint 주소 적용)
+            document.getElementById("ServerConnect").addEventListener("click", () => {
+                window.open(
+                    "https://incheonedu-my.sharepoint.com/:u:/g/personal/jhu1596_o365_ice_go_kr/IQD3CWe0mSbiS6Q5MkYenB4PAUyHiIk4F2XXbhGWHba77fc?e=iDDYBY",
+                    "_blank"
+                );
             });
 
             // Servo.h 미사용 호환 모드 체크박스
             document.getElementById("chkNoServoLib").addEventListener("change", (e) => {
                 state.noServoLib = e.target.checked;
                 updateUIFromState();
-                addLog(
-                    state.noServoLib
-                        ? "내장 PWM 서보 제어 모드 활성화 (Servo.h 라이브러리가 없어도 100% 컴파일됩니다)"
-                        : "표준 #include <Servo.h> 모드로 전환되었습니다.",
-                    "info"
-                );
             });
 
-            // 모터 각도 슬라이더 & 입력창 연동
+            // 모터 각도 슬라이더 연동
             function updateAngles(minVal, maxVal) {
                 let mn = Math.max(0, Math.min(175, parseInt(minVal, 10) || 0));
                 let mx = Math.max(5, Math.min(180, parseInt(maxVal, 10) || 180));
@@ -2061,77 +1547,23 @@ void measureAndSend(int angle) {
             document.getElementById("minAngleSlider").addEventListener("input", (e) => {
                 updateAngles(e.target.value, state.maxAngle);
             });
-            document.getElementById("minAngleInput").addEventListener("change", (e) => {
-                updateAngles(e.target.value, state.maxAngle);
-            });
+
             document.getElementById("maxAngleSlider").addEventListener("input", (e) => {
                 updateAngles(state.minAngle, e.target.value);
             });
-            document.getElementById("maxAngleInput").addEventListener("change", (e) => {
-                updateAngles(state.minAngle, e.target.value);
-            });
-            document.getElementById("cycleMsInput").addEventListener("change", (e) => {
-                state.cycleMs = Math.max(500, parseInt(e.target.value, 10) || 4000);
-                updateUIFromState();
-            });
 
-            document.querySelectorAll(".preset-chip").forEach((chip) => {
-                chip.addEventListener("click", () => {
-                    document.querySelectorAll(".preset-chip").forEach((c) => c.classList.remove("active"));
-                    chip.classList.add("active");
-                    updateAngles(chip.dataset.min, chip.dataset.max);
-                    addLog(`모터 작동 각도 프리셋 적용: ${state.minAngle}° ~ ${state.maxAngle}°`, "info");
-                });
-            });
-
-            // API 주소 카드 토글 및 LEFTHUK 서버 다운로드 링크
-            const toggleApiCard = () => {
-                const card = document.getElementById("apiBaseCard");
-                card.style.display = card.style.display === "none" ? "block" : "none";
-            };
-            document.getElementById("btnToggleApiBase").addEventListener("click", toggleApiCard);
-            document.getElementById("ServerConnect").addEventListener("click", () => {
-                window.open(
-                    "https://incheonedu-my.sharepoint.com/:u:/g/personal/jhu1596_o365_ice_go_kr/IQBidZP240_1TaWCY-eE_nTjAZFOX-Vaw8yW8RymZ5RGsOM?e=R1DHtS",
-                    "_blank"
-                );
-            });
-            document.getElementById("btnDownloadServerExe").addEventListener("click", () => {
-                window.open(
-                    "https://incheonedu-my.sharepoint.com/:u:/g/personal/jhu1596_o365_ice_go_kr/IQBidZP240_1TaWCY-eE_nTjAZFOX-Vaw8yW8RymZ5RGsOM?e=R1DHtS",
-                    "_blank"
-                );
-            });
-
-            document.getElementById("btnSaveApiBase").addEventListener("click", () => {
-                const val = document.getElementById("apiBaseInput").value.trim().replace(/\/+$/, "");
-                if (val) {
-                    state.apiBase = val;
-                    updateApiBaseUi();
-                    try {
-                        localStorage.setItem("API_BASE", val);
-                    } catch (e) {}
-                    addLog(`API_BASE 저장: ${val}`, "success");
+            document.getElementById("cycleSecInput").addEventListener("input", (e) => {
+                const sec = parseFloat(e.target.value);
+                if (!Number.isNaN(sec) && sec >= 0.5) {
+                    state.cycleSec = sec;
+                    updateUIFromState();
                 }
             });
 
-            document.getElementById("btnAutoDetect").addEventListener("click", async () => {
-                const picked = await autoPickApiBase();
-                if (!picked) {
-                    addLog("자동 감지 실패: 로컬 백엔드 실행/인증서/CORS 허용 도메인을 확인하세요.", "error");
-                } else {
-                    await checkLocalServer();
-                    await refreshPorts();
-                }
-            });
-
+            // 서버 확인, 포트 새로고침, 코드 업로드
             document.getElementById("btnCheckServer").addEventListener("click", checkLocalServer);
             document.getElementById("btnRefreshPorts").addEventListener("click", refreshPorts);
             document.getElementById("btnUploadRadarCode").addEventListener("click", uploadArduinoCode);
-
-            document.getElementById("btnGoToRadarTab").addEventListener("click", () => {
-                switchTab("radar");
-            });
 
             document.getElementById("btnToggleCode").addEventListener("click", () => {
                 const preview = document.getElementById("codePreview");
@@ -2161,7 +1593,6 @@ void measureAndSend(int angle) {
 
             // 레이더 제어 버튼
             document.getElementById("btnConnectWebSerial").addEventListener("click", connectWebSerial);
-            document.getElementById("btnConnectServerSerial").addEventListener("click", toggleServerSerialStream);
             document.getElementById("btnToggleSim").addEventListener("click", () => {
                 if (state.simTimer) {
                     stopSimulation();
@@ -2193,19 +1624,12 @@ void measureAndSend(int angle) {
                 state.resetOnZero = e.target.checked;
             });
 
-            document.getElementById("btnSendManualPacket").addEventListener("click", () => {
-                const val = document.getElementById("manualPacketInput").value;
-                processRadarLine(val);
-                addLog(`수동 데이터 입력 처리됨: ${val}`, "info");
-            });
-
             document.getElementById("btnClearLog").addEventListener("click", () => {
                 document.getElementById("logSection").innerHTML = "";
             });
 
-            // 모달 열기/닫기 (사용법, 개발자, 서버 가이드 14페이지 슬라이더)
+            // 모달 열기/닫기
             const helpModal = document.getElementById("helpModal");
-            const devModal = document.getElementById("devModal");
             const guideModal = document.getElementById("serverGuideModal");
 
             document.getElementById("btnHelp").addEventListener("click", () => {
@@ -2219,13 +1643,6 @@ void measureAndSend(int angle) {
             });
             document.getElementById("btnHelpClose").addEventListener("click", () => {
                 helpModal.style.display = "none";
-            });
-
-            document.getElementById("btnDev").addEventListener("click", () => {
-                devModal.style.display = "flex";
-            });
-            document.getElementById("btnDevClose").addEventListener("click", () => {
-                devModal.style.display = "none";
             });
 
             document.getElementById("btnServerGuide").addEventListener("click", () => {
@@ -2249,25 +1666,13 @@ void measureAndSend(int angle) {
                 guideModal.style.display = "none";
             });
 
-            [helpModal, devModal, guideModal].forEach((m) => {
+            [helpModal, guideModal].forEach((m) => {
                 m.addEventListener("click", (e) => {
                     if (e.target === m) m.style.display = "none";
                 });
             });
 
-            // 다국어 전환 (KO / EN)
-            document.getElementById("langSelect").addEventListener("change", (e) => {
-                const isEn = e.target.value === "en";
-                document.getElementById("titleMain").textContent = isEn
-                    ? "Huk.T's Data Science"
-                    : "Huk.T의 데이터 사이언스";
-                document.getElementById("subtitleMain").textContent = isEn
-                    ? "📡 Left HUK - Arduino Ultrasonic Radar & Uploader"
-                    : "📡 Left HUK - 아두이노 초음파 레이더 시스템 & 코드 업로더";
-                document.getElementById("btnHelp").textContent = isEn ? "Guide" : "사용법";
-            });
-
-            // LEFTHUK와 동일하게 페이지 로드 시 자동으로 API_BASE 감지 및 서버/포트 조회 실행
+            // 페이지 로드 시 자동 서버 감지 및 포트 조회
             await autoPickApiBase();
             await checkLocalServer();
             if (state.serverConnected) {
